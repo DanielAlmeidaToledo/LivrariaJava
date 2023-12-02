@@ -7,25 +7,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.Statement;
 
-import ifsp.edu.source.Model.Compra;
+import ifsp.edu.source.Model.Pessoa;
 
-public class DaoCompra {
+public class DaoPessoa {
 
-    public Compra incluir(Compra compra) {
+    public Pessoa incluir(Pessoa pessoa) {
         DataBaseCom.conectar();
-        String sqlString = "INSERT INTO compra (id_cliente, data) VALUES (?, ?)";
+        String sqlString = "INSERT INTO pessoa (nome) VALUES (?)";
         try {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
-            ps.setLong(1, compra.getIdCliente());
-            ps.setString(2, compra.getData());
-    
+            ps.setString(1, pessoa.getNome());
+
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     long id = generatedKeys.getLong(1);
-                    compra.setId(id);
-                    return compra;
+                    pessoa.setId(id);
+                    return pessoa;
                 }
             }
         } catch (SQLException ex) {
@@ -34,18 +33,17 @@ public class DaoCompra {
         return null;  // Retorna null se falhar
     }
 
-    public boolean alterar(Compra compra) {
+    public boolean alterar(Pessoa pessoa) {
         DataBaseCom.conectar();
-        if (findById(compra.getId()) == null) {
+        if (findById(pessoa.getId()) == null) {
             return false;
         }
         try {
-            String sqlString = "UPDATE compra SET id_cliente=?, data=? WHERE id=?";
+            String sqlString = "UPDATE pessoa SET nome=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
-            ps.setLong(1, compra.getIdCliente());
-            ps.setString(2, compra.getData());
-            ps.setLong(3, compra.getId());
+            ps.setString(1, pessoa.getNome());
+            ps.setLong(2, pessoa.getId());
 
             ps.execute();
             return true;
@@ -55,47 +53,45 @@ public class DaoCompra {
         return false;
     }
 
-    public Compra findById(long id) {
+    public Pessoa findById(long id) {
         DataBaseCom.conectar();
-        Compra compra = null;
+        Pessoa pessoa = null;
         try {
-            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM compra WHERE id=" + id);
+            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM pessoa WHERE id=" + id);
             while (rs.next()) {
-                compra = new Compra();
-                compra.setId(rs.getLong("id"));
-                compra.setIdCliente(rs.getLong("id_cliente"));
-                compra.setData(rs.getString("data"));
+                pessoa = new Pessoa();
+                pessoa.setId(rs.getLong("id"));
+                pessoa.setNome(rs.getString("nome"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return compra;
+        return pessoa;
     }
 
-    public boolean excluir(Compra compra) {
+    public boolean excluir(Pessoa pessoa) {
         DataBaseCom.conectar();
-        String sqlString = "DELETE FROM compra WHERE id=?";
+        String sqlString = "DELETE FROM pessoa WHERE id=?";
         try {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setLong(1, compra.getId());
-    
-            return ps.executeUpdate() > 0;
+            ps.setLong(1, pessoa.getId());
+            ps.executeUpdate();
+            return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return false;
     }
 
-    public List<Compra> listar() {
-        List<Compra> lista = new ArrayList<>();
+    public List<Pessoa> listar() {
+        List<Pessoa> lista = new ArrayList<>();
         try {
-            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM compra");
+            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM pessoa");
             while (rs.next()) {
-                Compra compra = new Compra();
-                compra.setId(rs.getLong("id"));
-                compra.setIdCliente(rs.getLong("id_cliente"));
-                compra.setData(rs.getString("data"));
-                lista.add(compra);
+                Pessoa pessoa = new Pessoa();
+                pessoa.setId(rs.getLong("id"));
+                pessoa.setNome(rs.getString("nome"));
+                lista.add(pessoa);
             }
         } catch (Exception e) {
             e.printStackTrace();

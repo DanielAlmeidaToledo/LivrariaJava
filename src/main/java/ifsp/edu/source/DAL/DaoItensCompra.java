@@ -6,11 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ifsp.edu.source.Model.ItensCompra;
+import ifsp.edu.source.Model.ItemCompra;
 
 public class DaoItensCompra {
 
-    public boolean incluir(ItensCompra itemCompra) {
+    public boolean incluir(ItemCompra itemCompra) {
         DataBaseCom.conectar();
 
         String sqlString = "INSERT INTO item_compra (id_compra, id_produto, quantidade) VALUES (?, ?, ?)";
@@ -27,7 +27,7 @@ public class DaoItensCompra {
         return false;
     }
 
-    public boolean alterar(ItensCompra itemCompra) {
+    public boolean alterar(ItemCompra itemCompra) {
         DataBaseCom.conectar();
         if (findById(itemCompra.getId()) == null) {
             return false;
@@ -49,13 +49,13 @@ public class DaoItensCompra {
         return false;
     }
 
-    public ItensCompra findById(long id) {
+    public ItemCompra findById(long id) {
         DataBaseCom.conectar();
-        ItensCompra itemCompra = null;
+        ItemCompra itemCompra = null;
         try {
             ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM item_compra WHERE id=" + id);
             while (rs.next()) {
-                itemCompra = new ItensCompra();
+                itemCompra = new ItemCompra();
                 itemCompra.setId(rs.getLong("id"));
                 itemCompra.setIdCompra(rs.getLong("id_compra"));
                 itemCompra.setIdProduto(rs.getLong("id_produto"));
@@ -79,12 +79,12 @@ public class DaoItensCompra {
         return false;
     }
 
-    public List<ItensCompra> listar() {
-        List<ItensCompra> lista = new ArrayList<>();
+    public List<ItemCompra> listar() {
+        List<ItemCompra> lista = new ArrayList<>();
         try {
             ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM item_compra");
             while (rs.next()) {
-                ItensCompra itemCompra = new ItensCompra();
+                ItemCompra itemCompra = new ItemCompra();
                 itemCompra.setId(rs.getLong("id"));
                 itemCompra.setIdCompra(rs.getLong("id_compra"));
                 itemCompra.setIdProduto(rs.getLong("id_produto"));

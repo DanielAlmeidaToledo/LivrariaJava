@@ -9,60 +9,66 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import ifsp.edu.source.DAL.DaoCompra;
+import ifsp.edu.source.Model.Compra;
 
 @RestController
+@RequestMapping("/compra")
 public class CompraController {
 
-	DaoCompra compraDao=new DaoCompra();
-	
+    @Autowired
+    private DaoCompra compraDao;
 
-    @RequestMapping(value = "/compra", method = RequestMethod.GET)
-    public List<Compra> Get() {
+    @GetMapping
+    public List<Compra> listarCompras() {
         return compraDao.listar();
     }
 
-    @RequestMapping(value = "/compra/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Compra> GetById(@PathVariable(value = "id") long id)
-    {
-       Compra compra = compraDao.searchById(id);
-        if(compra!=null)
-            return new ResponseEntity<Compra>(compra, HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<Compra> obterCompraPorId(@PathVariable long id) {
+        Compra compra = compraDao.findById(id);
+        if (compra != null)
+            return new ResponseEntity<>(compra, HttpStatus.OK);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/compra", method =  RequestMethod.POST)
-    public Compra Post(@Validated @RequestBody Compra compra)
-    {
-        return compraDao.incluir(compra);
-    }
-
-    @RequestMapping(value = "/compra/{id}", method =  RequestMethod.PUT)
-    public ResponseEntity<Compra> Put(@PathVariable(value = "id") long id, @Validated @RequestBody Compra newCompra)
-    {
-        Compra oldCompra = compraDao.searchById(id);
-        if(oldCompra!=null){
-            Compra compra = oldCompra;
-            compra.setNome(newCompra.getNome());
-            compraDao.incluir(compra);
-            return new ResponseEntity<Compra>(compra, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<Compra> criarCompra(@Validated @RequestBody Compra compra) {
+        Compra novaCompra = compraDao.incluir(compra);
+        if (novaCompra != null) {
+            return new ResponseEntity<>(novaCompra, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/compra/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Object> Delete(@PathVariable(value = "id") long id)
-    {
-        Compra compra =  compraDao.searchById(id);
-        if(compra!=null){
+    @PutMapping("/{id}")
+    public ResponseEntity<Compra> atualizarCompra(@PathVariable long id, @Validated @RequestBody Compra novaCompra) {
+        Compra compraExistente = compraDao.findById(id);
+        if (compraExistente != null) {
+            compraExistente.setIdCliente(novaCompra.getIdCliente());
+            compraExistente.setData(novaCompra.getData());
+            compraDao.alterar(compraExistente);
+            return new ResponseEntity<>(compraExistente, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> excluirCompra(@PathVariable long id) {
+        Compra compra = compraDao.findById(id);
+        if (compra != null) {
             compraDao.excluir(compra);
             return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

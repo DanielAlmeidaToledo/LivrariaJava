@@ -6,65 +6,63 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import edu.ifsp.app.PessoaDao;
+import ifsp.edu.source.DAL.DaoPessoa;
 import ifsp.edu.source.Model.Pessoa;
 
 @RestController
+@RequestMapping("/pessoa")
 public class PessoaController {
 
-	PessoaDao pessoaDao=new PessoaDao();
-	
+    @Autowired
+    DaoPessoa DaoPessoa;
 
-    @RequestMapping(value = "/compra", method = RequestMethod.GET)
-    public List<Pessoa> Get() {
-        return pessoaDao.listar();
+    @GetMapping
+    public List<Pessoa> listarPessoas() {
+        return DaoPessoa.listar();
     }
 
-    @RequestMapping(value = "/pessoa/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Pessoa> GetById(@PathVariable(value = "id") long id)
-    {
-       Pessoa pessoa = pessoaDao.searchById(id);
-        if(pessoa!=null)
-            return new ResponseEntity<Pessoa>(pessoa, HttpStatus.OK);
-        else
+    @GetMapping("/{id}")
+    public ResponseEntity<Pessoa> obterPessoaPorId(@PathVariable(value = "id") long id) {
+        Pessoa pessoa = DaoPessoa.findById(id);
+        if (pessoa != null) {
+            return new ResponseEntity<>(pessoa, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @RequestMapping(value = "/pessoa", method =  RequestMethod.POST)
-    public Pessoa Post(@Validated @RequestBody Pessoa pessoa)
-    {
-        return pessoaDao.incluir(pessoa);
-    }
-
-    @RequestMapping(value = "/pessoa/{id}", method =  RequestMethod.PUT)
-    public ResponseEntity<Pessoa> Put(@PathVariable(value = "id") long id, @Validated @RequestBody Pessoa newPessoa)
-    {
-        Pessoa oldPessoa = pessoaDao.searchById(id);
-        if(oldPessoa!=null){
-            Pessoa pessoa = oldPessoa;
-            pessoa.setNome(newPessoa.getNome());
-            pessoaDao.incluir(pessoa);
-            return new ResponseEntity<Pessoa>(pessoa, HttpStatus.OK);
         }
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/pessoa/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Object> Delete(@PathVariable(value = "id") long id)
-    {
-        Pessoa pessoa =  pessoaDao.searchById(id);
-        if(pessoa!=null){
-            pessoaDao.excluir(pessoa);
+    @PostMapping
+    public ResponseEntity<Pessoa> criarPessoa(@Validated @RequestBody Pessoa pessoa) {
+        Pessoa novaPessoa = DaoPessoa.incluir(pessoa);
+        if (novaPessoa != null) {
+            return new ResponseEntity<>(novaPessoa, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Pessoa> atualizarPessoa(@PathVariable(value = "id") long id, @Validated @RequestBody Pessoa novaPessoa) {
+        Pessoa pessoaExistente = DaoPessoa.findById(id);
+        if (pessoaExistente != null) {
+            pessoaExistente.setNome(novaPessoa.getNome());
+            DaoPessoa.incluir(pessoaExistente);
+            return new ResponseEntity<>(pessoaExistente, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> excluirPessoa(@PathVariable(value = "id") long id) {
+        Pessoa pessoa = DaoPessoa.findById(id);
+        if (pessoa != null) {
+            DaoPessoa.excluir(pessoa);
             return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
