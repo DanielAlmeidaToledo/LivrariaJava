@@ -15,7 +15,7 @@ public class LivroController {
 
     // Instância da classe de acesso ao banco de dados
     DataBaseCom database = new DataBaseCom();
-    
+
     // Instância da classe de acesso aos dados de livros
     DaoLivro cadLivros = new DaoLivro();
 
@@ -27,7 +27,7 @@ public class LivroController {
 
     // Endpoint para obter um livro pelo ID
     @GetMapping("/livro/{id}")
-    public ResponseEntity<Livro> GetById(@PathVariable(value = "id") long id) {
+    public ResponseEntity<Livro> GetById(@PathVariable(value = "id") String id) {
         Livro livro = cadLivros.findById(id);
         if (livro != null)
             // Retorna o livro com o status HTTP OK (200) se encontrado
@@ -46,16 +46,17 @@ public class LivroController {
     }
 
     // Endpoint para atualizar um livro existente
-    @PutMapping("/livro")
-    public String Atualizar(@Validated @RequestBody Livro newLivro) {
+    @PutMapping("/livro/{id}")
+    public String Atualizar(@PathVariable(value = "id") String id, @RequestBody Livro livroAtualizado) {
         // Altera as informações do livro no banco de dados
-        cadLivros.alterar(newLivro);
+        livroAtualizado.setId(id); // Defina o ID no objeto Livro com base no PathVariable
+        cadLivros.alterar(livroAtualizado);
         return "Livro atualizado";
     }
 
     // Endpoint para excluir um livro pelo ID
     @DeleteMapping("/livro/{id}")
-    public String Delete(@PathVariable(value = "id") long id) {
+    public String Delete(@PathVariable(value = "id") String id) {
         // Exclui o livro do banco de dados
         cadLivros.excluir(id);
         return "Exclusão realizada";

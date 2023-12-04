@@ -15,115 +15,115 @@ public class DaoLivro {
     // Método para incluir um livro no banco de dados
     public boolean incluir(Livro livro) {
         DataBaseCom.conectar();
-
         String sqlString = "insert into produto values(?,?,?,?)";
+
         try {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setInt(1, livro.getId());
+            ps.setString(1, livro.getId());
             ps.setString(2, livro.getNome());
             ps.setInt(3, livro.getQuantidade());
             ps.setDouble(4, livro.getPreco());
 
-            // Retorna true se a inclusão for bem-sucedida
-            boolean ri = ps.execute();
-            return ri;
+            return ps.execute(); // Retorna true se a inclusão for bem-sucedida
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        // Retorna false se falhar
-        return false;
+
+        return false; // Retorna false se falhar
     }
 
     // Método para alterar as informações de um livro existente no banco de dados
     public boolean alterar(Livro livro) {
         DataBaseCom.conectar();
-        if (findById(livro.getId()) == null) {
+
+        String id = livro.getId();
+
+        if (findById(id) == null)
             return false; // Retorna false se o livro não existir
-        }
+
         try {
-            String sqlString = "update produto set nome=? where id=?";
+            String sqlString = "UPDATE produto SET nome=?, qtde=?, preco=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-
             ps.setString(1, livro.getNome());
-            ps.setInt(2, livro.getId());
+            ps.setInt(2, livro.getQuantidade());
+            ps.setDouble(3, livro.getPreco());
+            ps.setString(4, id);
 
-            // Retorna true se a alteração for bem-sucedida
-            ps.execute();
-            return true;
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        // Retorna false se falhar
-        return false;
+
+        return false; // Retorna false se falhar
     }
 
     // Método para buscar um livro pelo ID no banco de dados
-    public Livro findById(long id) {
+    public Livro findById(String id) {
         DataBaseCom.conectar();
         Livro livro = null;
+
         try {
-            ResultSet rs = DataBaseCom.getStatement().executeQuery("select * from produto where id=" + id);
+            // Ajuste na query para usar PreparedStatement e evitar SQL injection
+            String sql = "SELECT * FROM produto WHERE id = ?";
+            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sql);
+            ps.setString(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 livro = new Livro();
-                livro.setId(rs.getInt("id"));
+                livro.setId(rs.getString("id"));
                 livro.setNome(rs.getString("nome"));
                 livro.setQuantidade(rs.getInt("qtde"));
-                livro.setPreco(rs.getDouble("preco"));
+                livro.setPreco(rs.getLong("preco"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // Retorna o livro ou null se não encontrado
-        return livro;
+
+        return livro; // Retorna o livro ou null se não encontrado
     }
 
     // Método para excluir um livro pelo ID
-    public boolean excluir(Livro livro) {
+    public boolean excluir(String id) {
         DataBaseCom.conectar();
-        String sqlString = "delete from produto where id=" + livro.getId();
-        try {
-            // Retorna true se a exclusão for bem-sucedida
-            DataBaseCom.getStatement().executeUpdate(sqlString);
-            return true;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        // Retorna false se falhar
-        return false;
-    }
+        String sqlString = "delete from produto where id=?";
 
-    // Método alternativo para excluir um livro pelo ID
-    public boolean excluir(long id) {
-        DataBaseCom.conectar();
-        String sqlString = "delete from produto where id=" + id;
         try {
             // Retorna true se a exclusão for bem-sucedida
-            DataBaseCom.getStatement().executeUpdate(sqlString);
+            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
+            ps.setString(1, id);
+            ps.executeUpdate();
+
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        // Retorna false se falhar
+
         return false;
     }
 
     // Método para listar todos os livros no banco de dados
     public List<Livro> listar() {
         List<Livro> lista = new ArrayList<>();
+
         try {
             ResultSet rs = DataBaseCom.getStatement().executeQuery("select * from produto");
+
             while (rs.next()) {
                 Livro livro = new Livro();
-                livro.setId(rs.getInt("id"));
+                livro.setId(rs.getString("id"));
                 livro.setNome(rs.getString("nome"));
                 livro.setQuantidade(rs.getInt("qtde"));
                 livro.setPreco(rs.getDouble("preco"));
+
                 lista.add(livro);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // Retorna a lista de livros
+
         return lista;
     }
 }
