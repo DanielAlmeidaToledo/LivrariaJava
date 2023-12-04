@@ -2,7 +2,6 @@ package ifsp.edu.source.Model;
 
 public class Pessoa
 {
-
     private long id;
     private String nome;
 
@@ -21,7 +20,4 @@ public class Pessoa
     public void setId(long id) {
         this.id = id;
     }
-    
-    
-
 }

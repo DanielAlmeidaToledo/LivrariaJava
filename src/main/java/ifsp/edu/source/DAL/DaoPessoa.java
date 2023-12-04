@@ -6,11 +6,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Statement;
+import org.springframework.stereotype.Component;
 
 import ifsp.edu.source.Model.Pessoa;
 
+@Component
 public class DaoPessoa {
 
+    // Método para incluir uma pessoa no banco de dados
     public Pessoa incluir(Pessoa pessoa) {
         DataBaseCom.conectar();
         String sqlString = "INSERT INTO pessoa (nome) VALUES (?)";
@@ -33,10 +36,11 @@ public class DaoPessoa {
         return null;  // Retorna null se falhar
     }
 
+    // Método para alterar as informações de uma pessoa existente no banco de dados
     public boolean alterar(Pessoa pessoa) {
         DataBaseCom.conectar();
         if (findById(pessoa.getId()) == null) {
-            return false;
+            return false; // Retorna false se a pessoa não existir
         }
         try {
             String sqlString = "UPDATE pessoa SET nome=? WHERE id=?";
@@ -45,14 +49,17 @@ public class DaoPessoa {
             ps.setString(1, pessoa.getNome());
             ps.setLong(2, pessoa.getId());
 
+            // Retorna true se a alteração for bem-sucedida
             ps.execute();
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        // Retorna false se falhar
         return false;
     }
 
+    // Método para buscar uma pessoa pelo ID no banco de dados
     public Pessoa findById(long id) {
         DataBaseCom.conectar();
         Pessoa pessoa = null;
@@ -66,9 +73,11 @@ public class DaoPessoa {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // Retorna a pessoa ou null se não encontrada
         return pessoa;
     }
 
+    // Método para excluir uma pessoa pelo ID
     public boolean excluir(Pessoa pessoa) {
         DataBaseCom.conectar();
         String sqlString = "DELETE FROM pessoa WHERE id=?";
@@ -76,13 +85,16 @@ public class DaoPessoa {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setLong(1, pessoa.getId());
             ps.executeUpdate();
+            // Retorna true se a exclusão for bem-sucedida
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        // Retorna false se falhar
         return false;
     }
 
+    // Método para listar todas as pessoas no banco de dados
     public List<Pessoa> listar() {
         List<Pessoa> lista = new ArrayList<>();
         try {
@@ -96,6 +108,7 @@ public class DaoPessoa {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // Retorna a lista de pessoas
         return lista;
     }
 }

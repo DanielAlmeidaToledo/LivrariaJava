@@ -3,14 +3,16 @@ package ifsp.edu.source.DAL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Statement;
-
+import org.springframework.stereotype.Component;
 import ifsp.edu.source.Model.Compra;
 
+@Component
 public class DaoCompra {
 
+    // Método para incluir uma compra no banco de dados
     public Compra incluir(Compra compra) {
         DataBaseCom.conectar();
         String sqlString = "INSERT INTO compra (id_cliente, data) VALUES (?, ?)";
@@ -34,10 +36,11 @@ public class DaoCompra {
         return null;  // Retorna null se falhar
     }
 
+    // Método para alterar uma compra existente no banco de dados
     public boolean alterar(Compra compra) {
         DataBaseCom.conectar();
         if (findById(compra.getId()) == null) {
-            return false;
+            return false; // Retorna false se a compra não existir
         }
         try {
             String sqlString = "UPDATE compra SET id_cliente=?, data=? WHERE id=?";
@@ -48,13 +51,14 @@ public class DaoCompra {
             ps.setLong(3, compra.getId());
 
             ps.execute();
-            return true;
+            return true; // Retorna true se a alteração for bem-sucedida
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return false;
+        return false; // Retorna false se falhar
     }
 
+    // Método para buscar uma compra pelo ID no banco de dados
     public Compra findById(long id) {
         DataBaseCom.conectar();
         Compra compra = null;
@@ -72,6 +76,7 @@ public class DaoCompra {
         return compra;
     }
 
+    // Método para excluir uma compra do banco de dados
     public boolean excluir(Compra compra) {
         DataBaseCom.conectar();
         String sqlString = "DELETE FROM compra WHERE id=?";
@@ -79,13 +84,14 @@ public class DaoCompra {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setLong(1, compra.getId());
     
-            return ps.executeUpdate() > 0;
+            return ps.executeUpdate() > 0; // Retorna true se a exclusão for bem-sucedida
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return false;
+        return false; // Retorna false se falhar
     }
 
+    // Método para listar todas as compras no banco de dados
     public List<Compra> listar() {
         List<Compra> lista = new ArrayList<>();
         try {
