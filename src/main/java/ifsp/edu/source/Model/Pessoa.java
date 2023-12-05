@@ -1,11 +1,16 @@
 package ifsp.edu.source.Model;
 
-public class Pessoa
-{
-    private long id;
+import ifsp.edu.source.Util.GeradorID;
+
+public class Pessoa {
+    private String id;
     private String nome;
 
-    public long getId() {
+    public Pessoa() {
+        this.id = GeradorID.getNextId().toString(); // Gera um novo UUID para o ID da Pessoa
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -17,7 +22,7 @@ public class Pessoa
         this.nome = nome;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

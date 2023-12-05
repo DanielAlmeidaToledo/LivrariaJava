@@ -26,7 +26,7 @@ public class CompraController {
 
     // Endpoint para obter uma compra pelo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Compra> obterCompraPorId(@PathVariable long id) {
+    public ResponseEntity<Compra> obterCompraPorId(@PathVariable String id) {
         Compra compra = compraDao.findById(id);
         if (compra != null)
             // Retorna a compra com o status HTTP OK (200)
@@ -51,7 +51,7 @@ public class CompraController {
 
     // Endpoint para atualizar uma compra existente pelo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Compra> atualizarCompra(@PathVariable long id, @Validated @RequestBody Compra novaCompra) {
+    public ResponseEntity<Compra> atualizarCompra(@PathVariable String id, @Validated @RequestBody Compra novaCompra) {
         Compra compraExistente = compraDao.findById(id);
         if (compraExistente != null) {
             // Atualiza a compra existente e a retorna com o status HTTP OK (200)
@@ -60,21 +60,23 @@ public class CompraController {
             compraDao.alterar(compraExistente);
             return new ResponseEntity<>(compraExistente, HttpStatus.OK);
         } else {
-            // Retorna o status HTTP NOT_FOUND (404) se a compra a ser atualizada não for encontrada
+            // Retorna o status HTTP NOT_FOUND (404) se a compra a ser atualizada não for
+            // encontrada
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     // Endpoint para excluir uma compra pelo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> excluirCompra(@PathVariable long id) {
+    public ResponseEntity<Object> excluirCompra(@PathVariable String id) {
         Compra compra = compraDao.findById(id);
         if (compra != null) {
             // Exclui a compra e retorna o status HTTP OK (200)
             compraDao.excluir(compra);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            // Retorna o status HTTP NOT_FOUND (404) se a compra a ser excluída não for encontrada
+            // Retorna o status HTTP NOT_FOUND (404) se a compra a ser excluída não for
+            // encontrada
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
