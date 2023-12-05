@@ -5,6 +5,10 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+
+import ifsp.edu.source.Model.ItemTransacao;
+import ifsp.edu.source.Model.ItemVenda;
+import ifsp.edu.source.Model.Livro;
 import ifsp.edu.source.Model.Venda;
 import org.springframework.stereotype.Component;
 
@@ -13,25 +17,35 @@ public class DaoVenda {
     // Método para incluir uma venda no banco de dados
     public Venda incluir(Venda venda) {
         DataBaseCom.conectar();
-        String sqlString = "INSERT INTO venda (id, id_cliente, data) VALUES (?, ?, ?)";
+        String sqlInserirVenda = "INSERT INTO venda (id, id_cliente, data) VALUES (?, ?, ?)";
 
         try {
-            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, venda.getId());
-            ps.setString(2, venda.getIdCliente());
-            ps.setString(3, venda.getData());
+            // Inserir a venda
+            PreparedStatement psInserirVenda = DataBaseCom.getConnection().prepareStatement(sqlInserirVenda);
+            psInserirVenda.setString(1, venda.getId());
+            psInserirVenda.setString(2, venda.getIdCliente());
+            psInserirVenda.setString(3, venda.getData());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                // Obtenha a lista de livros associados à venda
-                List<String> livros = obterLivrosDaVenda(venda.getId());
+            int rowsAffectedVenda = psInserirVenda.executeUpdate();
 
-                // Atualize a quantidade de livros
-                atualizarQuantidadeLivros(venda.getId(), livros, true);
+            if (rowsAffectedVenda > 0) {
+                // Obter a lista de itens associados à venda
+                List<ItemVenda> itensVenda = venda.getItensVenda();
+
+                // Inserir os itens associados à venda chamando a controller de ItemVenda
+                DaoItemVenda daoItemVenda = new DaoItemVenda();
+                for (ItemVenda itemVenda : itensVenda) {
+                    // Associar o item à venda antes de incluir no banco de dados
+                    itemVenda.setVenda(venda.getId());
+                    // Incluir o item de venda no banco de dados
+                    daoItemVenda.incluir(itemVenda);
+                }
+
+                // Atualizar a quantidade de livros após a inserção bem-sucedida
+                atualizarQuantidadeLivros(venda.getId(), true);
 
                 return venda;
             }
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -40,17 +54,75 @@ public class DaoVenda {
     }
 
     // Método para atualizar a quantidade de livros
-    public void atualizarQuantidadeLivros(String vendaId, List<String> livros, boolean decrementar) {
-        for (String livroId : livros) {
+    private void atualizarQuantidadeLivros(String vendaId, boolean decrementar) {
+        // Obter a lista de itens associados à venda
+        List<ItemVenda> itensVenda = obterItensVenda(vendaId);
+
+        for (ItemVenda itemVenda : itensVenda) {
             try {
                 String sqlString = "UPDATE produto SET qtde = qtde " + (decrementar ? "- 1" : "+ 1") + " WHERE id = ?";
                 PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-                ps.setString(1, livroId);
+                ps.setString(1, itemVenda.getLivro());
                 ps.executeUpdate();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private List<ItemVenda> obterItensVenda(String vendaId) {
+        List<ItemVenda> itensVenda = new ArrayList<>();
+
+        DataBaseCom.conectar();
+        String sqlString = "SELECT id, id_produto FROM item_produto WHERE id_venda = ?";
+
+        try {
+            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
+            ps.setString(1, vendaId);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ItemVenda itemVenda = new ItemVenda();
+                itemVenda.setId(rs.getString("id"));
+                itemVenda.setLivro(rs.getString("id_produto"));
+
+                // Você precisará obter o livro associado a partir do ID do produto
+                Livro livro = obterLivro(rs.getString("id_produto"));
+                itemVenda.setLivro(livro.getId());
+
+                // Adiciona o item associado à venda à lista
+                itensVenda.add(itemVenda);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return itensVenda;
+    }
+
+    // Método para obter um livro pelo ID
+    private Livro obterLivro(String idProduto) {
+        Livro livro = new Livro();
+
+        try {
+            String sqlString = "SELECT nome, qtde, preco FROM produto WHERE id=?";
+            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
+            ps.setString(1, idProduto);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                livro.setId(idProduto);
+                livro.setNome(rs.getString("nome"));
+                livro.setQuantidade(rs.getInt("qtde"));
+                livro.setPreco(rs.getDouble("preco"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return livro;
     }
 
     // Método para alterar uma venda existente no banco de dados
@@ -85,8 +157,8 @@ public class DaoVenda {
             livrosAdicionados.removeAll(livrosAntigos);
 
             // Atualize a quantidade de livros adicionando/removendo conforme necessário
-            atualizarQuantidadeLivros(venda.getId(), livrosRemovidos, false);
-            atualizarQuantidadeLivros(venda.getId(), livrosAdicionados, true);
+            atualizarQuantidadeLivros(venda.getId(), false);
+            atualizarQuantidadeLivros(venda.getId(), true);
 
             return true; // Retorna true se a alteração for bem-sucedida
         } catch (SQLException ex) {
@@ -157,7 +229,7 @@ public class DaoVenda {
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 // Atualize a quantidade de livros
-                atualizarQuantidadeLivros(venda.getId(), livros, false);
+                atualizarQuantidadeLivros(venda.getId(), false);
 
                 return true;
             }
