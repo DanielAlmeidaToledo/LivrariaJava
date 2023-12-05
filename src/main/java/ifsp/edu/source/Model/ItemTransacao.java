@@ -1,5 +1,7 @@
 package ifsp.edu.source.Model;
 
+import ifsp.edu.source.Util.GeradorID;
+
 public class ItemTransacao {
     protected String id;
     protected String idTransacao;
@@ -7,7 +9,7 @@ public class ItemTransacao {
     protected int quantidade;
 
     public ItemTransacao() {
-        // Construtor padrão
+        this.id = GeradorID.getNextId().toString();
     }
 
     public ItemTransacao(String idTransacao, String idProduto, int quantidade) {

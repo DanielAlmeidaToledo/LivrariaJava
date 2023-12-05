@@ -10,17 +10,20 @@ public abstract class Transacao {
     protected List<ItemTransacao> itens;
 
     public Transacao() {
-        this.id = GeradorID.getNextId();
+        this.id = GeradorID.getNextId().toString();
     }
 
     public Transacao(String idCliente, String data, List<ItemTransacao> itens) {
-        this.id = GeradorID.getNextId();
         this.idCliente = idCliente;
         this.data = data;
         this.itens = itens;
     }
 
     // Getters e Setters
+
+    public void adicionarItemTransacao(ItemTransacao itemTransacao) {
+        this.itens.add(itemTransacao);
+    }
 
     public String getId() {
         return id;

@@ -1,5 +1,7 @@
 package ifsp.edu.source.Model;
 
+import java.util.List;
+import java.util.ArrayList;
 import ifsp.edu.source.Util.GeradorID;
 
 public class Livro {
@@ -7,9 +9,19 @@ public class Livro {
 	private String nome;
 	private int quantidade;
 	private double preco;
+	private List<ItemVenda> itensVenda;
 
 	public Livro() {
 		this.id = GeradorID.getNextId().toString();
+		this.itensVenda = new ArrayList<>();
+	}
+
+	public List<ItemVenda> getItensVenda() {
+		return itensVenda;
+	}
+
+	public void adicionarItemVenda(ItemVenda itemVenda) {
+		this.itensVenda.add(itemVenda);
 	}
 
 	public int getQuantidade() {
