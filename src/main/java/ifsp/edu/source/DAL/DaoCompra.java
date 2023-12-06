@@ -16,7 +16,7 @@ public class DaoCompra {
     // Método para incluir uma Compra no banco de dados
     public Compra incluir(Compra Compra) {
         DataBaseCom.conectar();
-        String sqlInserirCompra = "INSERT INTO Compra (id, id_cliente, data) VALUES (?, ?, ?)";
+        String sqlInserirCompra = "INSERT INTO compra (id, id_cliente, data) VALUES (?, ?, ?)";
 
         try {
             // Inserir a Compra
@@ -29,10 +29,10 @@ public class DaoCompra {
 
             if (rowsAffectedCompra > 0) {
                 // Obter a lista de itens associados à Compra
-                List<ItemProduto> itensCompra = Compra.getItensCompra();
+                List<ItemProduto> itensCompra = Compra.getItens();
                 // printa a lista de itens
                 System.out.println("Lista de itens da Compra: ");
-                System.out.println(Compra.getItensCompra());
+                System.out.println(Compra.getItens());
 
                 // Inserir os itens associados à Compra chamando a controller de ItemProduto
                 DaoItemCompra daoItemCompra = new DaoItemCompra();
@@ -75,6 +75,8 @@ public class DaoCompra {
     private List<ItemProduto> obterItensCompra(String compraId) {
         List<ItemProduto> itensCompra = new ArrayList<>();
 
+        System.out.println("Obtendo itens da Compra " + compraId);
+
         DataBaseCom.conectar();
         String sqlString = "SELECT id, id_produto FROM item_produto WHERE id_compra = ?";
 
@@ -86,6 +88,9 @@ public class DaoCompra {
 
             while (rs.next()) {
                 ItemProduto ItemProduto = new ItemProduto();
+                
+                System.out.println("ItemProduto: " + rs.getString("id") + " - " + rs.getString("id_produto") + " - " + rs.getString("id_compra") + " - " + rs.getString("qtde") + " -");
+
                 ItemProduto.setId(rs.getString("id"));
                 ItemProduto.setLivro(rs.getString("id_produto"));
 
@@ -108,7 +113,7 @@ public class DaoCompra {
         Livro livro = new Livro();
 
         try {
-            String sqlString = "SELECT nome, qtde, preco FROM produto WHERE id=?";
+            String sqlString = "SELECT nome FROM produto WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setString(1, idProduto);
 
@@ -139,7 +144,7 @@ public class DaoCompra {
             List<String> livrosAntigos = obterLivrosDaCompra(Compra.getId());
 
             // Atualize a Compra
-            String sqlString = "UPDATE Compra SET id_cliente=?, data=? WHERE id=?";
+            String sqlString = "UPDATE compra SET id_cliente=?, data=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
             ps.setString(1, Compra.getIdCliente());
@@ -197,7 +202,7 @@ public class DaoCompra {
         Compra Compra = null;
 
         try {
-            String sqlString = "SELECT * FROM Compra WHERE id=?";
+            String sqlString = "SELECT * FROM compra WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setString(1, id);
 
@@ -219,7 +224,7 @@ public class DaoCompra {
     // Método para excluir uma Compra do banco de dados
     public boolean excluir(Compra Compra) {
         DataBaseCom.conectar();
-        String sqlString = "DELETE FROM Compra WHERE id=?";
+        String sqlString = "DELETE FROM compra WHERE id=?";
 
         try {
             // Obtenha a lista de livros associados à Compra
@@ -247,7 +252,7 @@ public class DaoCompra {
         List<Compra> lista = new ArrayList<>();
 
         try {
-            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM Compra");
+            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM compra");
 
             while (rs.next()) {
                 Compra Compra = new Compra();

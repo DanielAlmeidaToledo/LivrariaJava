@@ -12,7 +12,7 @@ import ifsp.edu.source.DAL.DaoCompra;
 import ifsp.edu.source.Model.Compra;
 
 @RestController
-@RequestMapping("/Compra")
+@RequestMapping("/compra")
 public class CompraController {
 
     @Autowired
