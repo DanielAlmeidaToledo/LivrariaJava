@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
-import ifsp.edu.source.Model.ItemVenda;
+import ifsp.edu.source.Model.ItemProduto;
 import ifsp.edu.source.Model.Livro;
 import ifsp.edu.source.Model.Venda;
 
@@ -15,20 +15,20 @@ import org.springframework.stereotype.Component;
 public class DaoItemVenda {
 
     // Método para incluir um item de venda no banco de dados
-    public ItemVenda incluir(ItemVenda itemVenda) {
+    public ItemProduto incluir(ItemProduto ItemProduto) {
         DataBaseCom.conectar();
         String sqlString = "INSERT INTO item_produto (id, id_venda, id_produto, qtde) VALUES (?, ?, ?, ?)";
 
         try {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, itemVenda.getId());
-            ps.setString(2, itemVenda.getVenda());
-            ps.setString(3, itemVenda.getLivro());
-            ps.setInt(4, itemVenda.getQuantidade());
+            ps.setString(1, ItemProduto.getId());
+            ps.setString(2, ItemProduto.getVenda());
+            ps.setString(3, ItemProduto.getLivro());
+            ps.setInt(4, ItemProduto.getQuantidade());
 
             if (ps.executeUpdate() > 0) {
-                // Ao incluir, retorne o itemVenda com os dados atualizados
-                return findById(itemVenda.getId());
+                // Ao incluir, retorne o ItemProduto com os dados atualizados
+                return findById(ItemProduto.getId());
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -38,20 +38,20 @@ public class DaoItemVenda {
     }
 
     // Método para alterar um item de venda existente no banco de dados
-    public boolean alterar(ItemVenda itemVenda) {
+    public boolean alterar(ItemProduto ItemProduto) {
         DataBaseCom.conectar();
 
-        if (findById(itemVenda.getId()) == null)
+        if (findById(ItemProduto.getId()) == null)
             return false; // Retorna false se o item de venda não existir
 
         try {
             String sqlString = "UPDATE item_produto SET id_venda=?, id_produto=?, qtde=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
-            ps.setString(1, itemVenda.getVenda());
-            ps.setString(2, itemVenda.getLivro());
-            ps.setInt(3, itemVenda.getQuantidade());
-            ps.setString(4, itemVenda.getId());
+            ps.setString(1, ItemProduto.getVenda());
+            ps.setString(2, ItemProduto.getLivro());
+            ps.setInt(3, ItemProduto.getQuantidade());
+            ps.setString(4, ItemProduto.getId());
 
             return ps.executeUpdate() > 0; // Retorna true se a alteração for bem-sucedida
         } catch (SQLException ex) {
@@ -62,9 +62,9 @@ public class DaoItemVenda {
     }
 
     // Método para buscar um item de venda pelo ID no banco de dados
-    public ItemVenda findById(String id) {
+    public ItemProduto findById(String id) {
         DataBaseCom.conectar();
-        ItemVenda itemVenda = null;
+        ItemProduto ItemProduto = null;
 
         try {
             String sqlString = "SELECT ip.id, ip.id_venda, ip.id_produto, l.nome as nome_livro, v.data as data_venda FROM item_produto ip "
@@ -78,35 +78,35 @@ public class DaoItemVenda {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                itemVenda = new ItemVenda();
-                itemVenda.setId(rs.getString("id"));
+                ItemProduto = new ItemProduto();
+                ItemProduto.setId(rs.getString("id"));
 
                 Livro livro = new Livro();
                 livro.setId(rs.getString("id_produto"));
                 livro.setNome(rs.getString("nome_livro"));
-                itemVenda.setLivro(livro.getId());
+                ItemProduto.setLivro(livro.getId());
 
                 Venda venda = new Venda();
                 venda.setId(rs.getString("id_venda"));
                 venda.setData(rs.getString("data_venda"));
-                itemVenda.setVenda(venda.getId());
+                ItemProduto.setVenda(venda.getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return itemVenda;
+        return ItemProduto;
     }
 
     // Método para excluir um item de venda pelo ID
-    public boolean excluir(ItemVenda itemVenda) {
+    public boolean excluir(ItemProduto ItemProduto) {
         DataBaseCom.conectar();
         String sqlString = "DELETE FROM item_produto WHERE id=?";
 
         try {
             // Retorna true se a exclusão for bem-sucedida
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, itemVenda.getId());
+            ps.setString(1, ItemProduto.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -116,8 +116,8 @@ public class DaoItemVenda {
     }
 
     // Método para listar todos os itens de venda no banco de dados
-    public List<ItemVenda> listar() {
-        List<ItemVenda> lista = new ArrayList<>();
+    public List<ItemProduto> listar() {
+        List<ItemProduto> lista = new ArrayList<>();
 
         try {
             String sqlString = "SELECT ip.id, ip.id_venda, ip.id_produto, l.nome as nome_livro, v.data as data_venda FROM item_produto ip "
@@ -127,20 +127,20 @@ public class DaoItemVenda {
             ResultSet rs = DataBaseCom.getStatement().executeQuery(sqlString);
 
             while (rs.next()) {
-                ItemVenda itemVenda = new ItemVenda();
-                itemVenda.setId(rs.getString("id"));
+                ItemProduto ItemProduto = new ItemProduto();
+                ItemProduto.setId(rs.getString("id"));
 
                 Livro livro = new Livro();
                 livro.setId(rs.getString("id_produto"));
                 livro.setNome(rs.getString("nome_livro"));
-                itemVenda.setLivro(livro.getId());
+                ItemProduto.setLivro(livro.getId());
 
                 Venda venda = new Venda();
                 venda.setId(rs.getString("id_venda"));
                 venda.setData(rs.getString("data_venda"));
-                itemVenda.setVenda(venda.getId());
+                ItemProduto.setVenda(venda.getId());
 
-                lista.add(itemVenda);
+                lista.add(ItemProduto);
             }
         } catch (Exception e) {
             e.printStackTrace();

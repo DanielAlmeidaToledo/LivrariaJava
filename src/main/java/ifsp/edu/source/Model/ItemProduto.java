@@ -2,13 +2,13 @@ package ifsp.edu.source.Model;
 
 import ifsp.edu.source.Util.GeradorID;
 
-public class ItemVenda {
+public class ItemProduto {
     private String id;
     private String idProduto; // Relação com Livro
     private String idVenda; // Relação com Venda
     private int quantidade;
 
-    public ItemVenda() {
+    public ItemProduto() {
         this.id = GeradorID.getNextId().toString();
     }
 
@@ -47,7 +47,7 @@ public class ItemVenda {
 
     @Override
     public String toString() {
-        return "ItemVenda [id=" + id + ", idProduto=" + idProduto + ", idVenda=" + idVenda + ", quantidade="
+        return "ItemProduto [id=" + id + ", idProduto=" + idProduto + ", idVenda=" + idVenda + ", quantidade="
                 + quantidade + "]";
     }
 }

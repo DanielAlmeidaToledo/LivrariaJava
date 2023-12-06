@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
-import ifsp.edu.source.Model.ItemTransacao;
-import ifsp.edu.source.Model.ItemVenda;
+import ifsp.edu.source.Model.ItemProduto;
 import ifsp.edu.source.Model.Livro;
 import ifsp.edu.source.Model.Venda;
 import org.springframework.stereotype.Component;
@@ -30,15 +29,15 @@ public class DaoVenda {
 
             if (rowsAffectedVenda > 0) {
                 // Obter a lista de itens associados à venda
-                List<ItemVenda> itensVenda = venda.getItensVenda();
+                List<ItemProduto> itensVenda = venda.getItensVenda();
 
-                // Inserir os itens associados à venda chamando a controller de ItemVenda
+                // Inserir os itens associados à venda chamando a controller de ItemProduto
                 DaoItemVenda daoItemVenda = new DaoItemVenda();
-                for (ItemVenda itemVenda : itensVenda) {
+                for (ItemProduto ItemProduto : itensVenda) {
                     // Associar o item à venda antes de incluir no banco de dados
-                    itemVenda.setVenda(venda.getId());
+                    ItemProduto.setVenda(venda.getId());
                     // Incluir o item de venda no banco de dados
-                    daoItemVenda.incluir(itemVenda);
+                    daoItemVenda.incluir(ItemProduto);
                 }
 
                 // Atualizar a quantidade de livros após a inserção bem-sucedida
@@ -56,13 +55,13 @@ public class DaoVenda {
     // Método para atualizar a quantidade de livros
     private void atualizarQuantidadeLivros(String vendaId, boolean decrementar) {
         // Obter a lista de itens associados à venda
-        List<ItemVenda> itensVenda = obterItensVenda(vendaId);
+        List<ItemProduto> itensVenda = obterItensVenda(vendaId);
 
-        for (ItemVenda itemVenda : itensVenda) {
+        for (ItemProduto ItemProduto : itensVenda) {
             try {
                 String sqlString = "UPDATE produto SET qtde = qtde " + (decrementar ? "- 1" : "+ 1") + " WHERE id = ?";
                 PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-                ps.setString(1, itemVenda.getLivro());
+                ps.setString(1, ItemProduto.getLivro());
                 ps.executeUpdate();
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -70,8 +69,8 @@ public class DaoVenda {
         }
     }
 
-    private List<ItemVenda> obterItensVenda(String vendaId) {
-        List<ItemVenda> itensVenda = new ArrayList<>();
+    private List<ItemProduto> obterItensVenda(String vendaId) {
+        List<ItemProduto> itensVenda = new ArrayList<>();
 
         DataBaseCom.conectar();
         String sqlString = "SELECT id, id_produto FROM item_produto WHERE id_venda = ?";
@@ -83,16 +82,16 @@ public class DaoVenda {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                ItemVenda itemVenda = new ItemVenda();
-                itemVenda.setId(rs.getString("id"));
-                itemVenda.setLivro(rs.getString("id_produto"));
+                ItemProduto ItemProduto = new ItemProduto();
+                ItemProduto.setId(rs.getString("id"));
+                ItemProduto.setLivro(rs.getString("id_produto"));
 
                 // Você precisará obter o livro associado a partir do ID do produto
                 Livro livro = obterLivro(rs.getString("id_produto"));
-                itemVenda.setLivro(livro.getId());
+                ItemProduto.setLivro(livro.getId());
 
                 // Adiciona o item associado à venda à lista
-                itensVenda.add(itemVenda);
+                itensVenda.add(ItemProduto);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

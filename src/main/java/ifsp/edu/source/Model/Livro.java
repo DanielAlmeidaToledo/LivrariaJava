@@ -9,19 +9,9 @@ public class Livro {
 	private String nome;
 	private int quantidade;
 	private double preco;
-	private List<ItemVenda> itensVenda;
 
 	public Livro() {
 		this.id = GeradorID.getNextId().toString();
-		this.itensVenda = new ArrayList<>();
-	}
-
-	public List<ItemVenda> getItensVenda() {
-		return itensVenda;
-	}
-
-	public void adicionarItemVenda(ItemVenda itemVenda) {
-		this.itensVenda.add(itemVenda);
 	}
 
 	public int getQuantidade() {

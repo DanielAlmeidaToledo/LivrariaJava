@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Venda extends Transacao {
-    private List<ItemVenda> itensVenda; // Relação com ItemVenda
+    private List<ItemProduto> itensVenda; // Relação com ItemProduto
 
     public Venda() {
         this.itensVenda = new ArrayList<>();
@@ -16,12 +16,12 @@ public class Venda extends Transacao {
 
     // Métodos getters e setters
 
-    public List<ItemVenda> getItensVenda() {
+    public List<ItemProduto> getItensVenda() {
         return itensVenda;
     }
 
-    public void adicionarItemVenda(ItemVenda itemVenda) {
-        this.itensVenda.add(itemVenda);
+    public void adicionarItemVenda(ItemProduto ItemProduto) {
+        this.itensVenda.add(ItemProduto);
     }
 
     @Override
