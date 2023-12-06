@@ -52,11 +52,11 @@ public class DataBaseCom {
         try {
             statement.executeUpdate("create table if not exists pessoa (id TEXT PRIMARY KEY, nome TEXT)");
             statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS venda (id TEXT PRIMARY KEY, id_cliente TEXT, data TEXT)");
+                    "CREATE TABLE IF NOT EXISTS Compra (id TEXT PRIMARY KEY, id_cliente TEXT, data TEXT)");
             statement.executeUpdate(
                     "create table if not exists produto (id TEXT  PRIMARY KEY, nome TEXT, qtde INTEGER, preco REAL)");
             statement.executeUpdate(
-                    "create table if not exists item_produto (id TEXT  PRIMARY KEY, id_venda TEXT, id_produto TEXT, qtde INTEGER)");
+                    "create table if not exists item_produto (id TEXT  PRIMARY KEY, id_compra TEXT, id_produto TEXT, qtde INTEGER)");
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

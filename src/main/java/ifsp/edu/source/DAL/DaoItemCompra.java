@@ -7,22 +7,22 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import ifsp.edu.source.Model.ItemProduto;
 import ifsp.edu.source.Model.Livro;
-import ifsp.edu.source.Model.Venda;
+import ifsp.edu.source.Model.Compra;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class DaoItemVenda {
+public class DaoItemCompra {
 
-    // Método para incluir um item de venda no banco de dados
+    // Método para incluir um item de Compra no banco de dados
     public ItemProduto incluir(ItemProduto ItemProduto) {
         DataBaseCom.conectar();
-        String sqlString = "INSERT INTO item_produto (id, id_venda, id_produto, qtde) VALUES (?, ?, ?, ?)";
+        String sqlString = "INSERT INTO item_produto (id, id_compra, id_produto, qtde) VALUES (?, ?, ?, ?)";
 
         try {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setString(1, ItemProduto.getId());
-            ps.setString(2, ItemProduto.getVenda());
+            ps.setString(2, ItemProduto.getCompra());
             ps.setString(3, ItemProduto.getLivro());
             ps.setInt(4, ItemProduto.getQuantidade());
 
@@ -37,18 +37,18 @@ public class DaoItemVenda {
         return null; // Retorna null se a inclusão falhar
     }
 
-    // Método para alterar um item de venda existente no banco de dados
+    // Método para alterar um item de Compra existente no banco de dados
     public boolean alterar(ItemProduto ItemProduto) {
         DataBaseCom.conectar();
 
         if (findById(ItemProduto.getId()) == null)
-            return false; // Retorna false se o item de venda não existir
+            return false; // Retorna false se o item de Compra não existir
 
         try {
-            String sqlString = "UPDATE item_produto SET id_venda=?, id_produto=?, qtde=? WHERE id=?";
+            String sqlString = "UPDATE item_produto SET id_compra=?, id_produto=?, qtde=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
-            ps.setString(1, ItemProduto.getVenda());
+            ps.setString(1, ItemProduto.getCompra());
             ps.setString(2, ItemProduto.getLivro());
             ps.setInt(3, ItemProduto.getQuantidade());
             ps.setString(4, ItemProduto.getId());
@@ -61,16 +61,16 @@ public class DaoItemVenda {
         return false; // Retorna false se não existir
     }
 
-    // Método para buscar um item de venda pelo ID no banco de dados
+    // Método para buscar um item de Compra pelo ID no banco de dados
     public ItemProduto findById(String id) {
         DataBaseCom.conectar();
         ItemProduto ItemProduto = null;
 
         try {
-            String sqlString = "SELECT ip.id, ip.id_venda, ip.id_produto, l.nome as nome_livro, v.data as data_venda FROM item_produto ip "
+            String sqlString = "SELECT ip.id, ip.id_compra, ip.id_produto, l.nome as nome_livro, v.data as data_compra FROM item_produto ip "
                     +
                     "INNER JOIN produto l ON ip.id_produto = l.id " +
-                    "INNER JOIN venda v ON ip.id_venda = v.id " +
+                    "INNER JOIN Compra v ON ip.id_compra = v.id " +
                     "WHERE ip.id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setString(1, id);
@@ -86,10 +86,10 @@ public class DaoItemVenda {
                 livro.setNome(rs.getString("nome_livro"));
                 ItemProduto.setLivro(livro.getId());
 
-                Venda venda = new Venda();
-                venda.setId(rs.getString("id_venda"));
-                venda.setData(rs.getString("data_venda"));
-                ItemProduto.setVenda(venda.getId());
+                Compra Compra = new Compra();
+                Compra.setId(rs.getString("id_compra"));
+                Compra.setData(rs.getString("data_compra"));
+                ItemProduto.setCompra(Compra.getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +98,7 @@ public class DaoItemVenda {
         return ItemProduto;
     }
 
-    // Método para excluir um item de venda pelo ID
+    // Método para excluir um item de Compra pelo ID
     public boolean excluir(ItemProduto ItemProduto) {
         DataBaseCom.conectar();
         String sqlString = "DELETE FROM item_produto WHERE id=?";
@@ -115,15 +115,15 @@ public class DaoItemVenda {
         return false; // Retorna false se não existir
     }
 
-    // Método para listar todos os itens de venda no banco de dados
+    // Método para listar todos os itens de Compra no banco de dados
     public List<ItemProduto> listar() {
         List<ItemProduto> lista = new ArrayList<>();
 
         try {
-            String sqlString = "SELECT ip.id, ip.id_venda, ip.id_produto, l.nome as nome_livro, v.data as data_venda FROM item_produto ip "
+            String sqlString = "SELECT ip.id, ip.id_compra, ip.id_produto, l.nome as nome_livro, v.data as data_compra FROM item_produto ip "
                     +
                     "INNER JOIN produto l ON ip.id_produto = l.id " +
-                    "INNER JOIN venda v ON ip.id_venda = v.id";
+                    "INNER JOIN Compra v ON ip.id_compra = v.id";
             ResultSet rs = DataBaseCom.getStatement().executeQuery(sqlString);
 
             while (rs.next()) {
@@ -135,10 +135,10 @@ public class DaoItemVenda {
                 livro.setNome(rs.getString("nome_livro"));
                 ItemProduto.setLivro(livro.getId());
 
-                Venda venda = new Venda();
-                venda.setId(rs.getString("id_venda"));
-                venda.setData(rs.getString("data_venda"));
-                ItemProduto.setVenda(venda.getId());
+                Compra Compra = new Compra();
+                Compra.setId(rs.getString("id_compra"));
+                Compra.setData(rs.getString("data_compra"));
+                ItemProduto.setCompra(Compra.getId());
 
                 lista.add(ItemProduto);
             }

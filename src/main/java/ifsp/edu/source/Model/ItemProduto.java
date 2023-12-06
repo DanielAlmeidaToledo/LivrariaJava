@@ -5,7 +5,7 @@ import ifsp.edu.source.Util.GeradorID;
 public class ItemProduto {
     private String id;
     private String idProduto; // Relação com Livro
-    private String idVenda; // Relação com Venda
+    private String idCompra; // Relação com Compra
     private int quantidade;
 
     public ItemProduto() {
@@ -29,12 +29,12 @@ public class ItemProduto {
         this.idProduto = idProduto;
     }
 
-    public String getVenda() {
-        return idVenda;
+    public String getCompra() {
+        return idCompra;
     }
 
-    public void setVenda(String idVenda) {
-        this.idVenda = idVenda;
+    public void setCompra(String idCompra) {
+        this.idCompra = idCompra;
     }
 
     public int getQuantidade() {
@@ -47,7 +47,7 @@ public class ItemProduto {
 
     @Override
     public String toString() {
-        return "ItemProduto [id=" + id + ", idProduto=" + idProduto + ", idVenda=" + idVenda + ", quantidade="
+        return "ItemProduto [id=" + id + ", idProduto=" + idProduto + ", idCompra=" + idCompra + ", quantidade="
                 + quantidade + "]";
     }
 }

@@ -8,45 +8,45 @@ import java.sql.PreparedStatement;
 
 import ifsp.edu.source.Model.ItemProduto;
 import ifsp.edu.source.Model.Livro;
-import ifsp.edu.source.Model.Venda;
+import ifsp.edu.source.Model.Compra;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DaoVenda {
-    // Método para incluir uma venda no banco de dados
-    public Venda incluir(Venda venda) {
+public class DaoCompra {
+    // Método para incluir uma Compra no banco de dados
+    public Compra incluir(Compra Compra) {
         DataBaseCom.conectar();
-        String sqlInserirVenda = "INSERT INTO venda (id, id_cliente, data) VALUES (?, ?, ?)";
+        String sqlInserirCompra = "INSERT INTO Compra (id, id_cliente, data) VALUES (?, ?, ?)";
 
         try {
-            // Inserir a venda
-            PreparedStatement psInserirVenda = DataBaseCom.getConnection().prepareStatement(sqlInserirVenda);
-            psInserirVenda.setString(1, venda.getId());
-            psInserirVenda.setString(2, venda.getIdCliente());
-            psInserirVenda.setString(3, venda.getData());
+            // Inserir a Compra
+            PreparedStatement psInserirCompra = DataBaseCom.getConnection().prepareStatement(sqlInserirCompra);
+            psInserirCompra.setString(1, Compra.getId());
+            psInserirCompra.setString(2, Compra.getIdCliente());
+            psInserirCompra.setString(3, Compra.getData());
 
-            int rowsAffectedVenda = psInserirVenda.executeUpdate();
+            int rowsAffectedCompra = psInserirCompra.executeUpdate();
 
-            if (rowsAffectedVenda > 0) {
-                // Obter a lista de itens associados à venda
-                List<ItemProduto> itensVenda = venda.getItensVenda();
+            if (rowsAffectedCompra > 0) {
+                // Obter a lista de itens associados à Compra
+                List<ItemProduto> itensCompra = Compra.getItensCompra();
                 // printa a lista de itens
-                System.out.println("Lista de itens da venda: ");
-                System.out.println(venda.getItensVenda());
+                System.out.println("Lista de itens da Compra: ");
+                System.out.println(Compra.getItensCompra());
 
-                // Inserir os itens associados à venda chamando a controller de ItemProduto
-                DaoItemVenda daoItemVenda = new DaoItemVenda();
-                for (ItemProduto ItemProduto : itensVenda) {
-                    // Associar o item à venda antes de incluir no banco de dados
-                    ItemProduto.setVenda(venda.getId());
-                    // Incluir o item de venda no banco de dados
-                    daoItemVenda.incluir(ItemProduto);
+                // Inserir os itens associados à Compra chamando a controller de ItemProduto
+                DaoItemCompra daoItemCompra = new DaoItemCompra();
+                for (ItemProduto ItemProduto : itensCompra) {
+                    // Associar o item à Compra antes de incluir no banco de dados
+                    ItemProduto.setCompra(Compra.getId());
+                    // Incluir o item de Compra no banco de dados
+                    daoItemCompra.incluir(ItemProduto);
                 }
 
                 // Atualizar a quantidade de livros após a inserção bem-sucedida
-                atualizarQuantidadeLivros(venda.getId(), true);
+                atualizarQuantidadeLivros(Compra.getId(), true);
 
-                return venda;
+                return Compra;
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -56,11 +56,11 @@ public class DaoVenda {
     }
 
     // Método para atualizar a quantidade de livros
-    private void atualizarQuantidadeLivros(String vendaId, boolean decrementar) {
-        // Obter a lista de itens associados à venda
-        List<ItemProduto> itensVenda = obterItensVenda(vendaId);
+    private void atualizarQuantidadeLivros(String compraId, boolean decrementar) {
+        // Obter a lista de itens associados à Compra
+        List<ItemProduto> itensCompra = obterItensCompra(compraId);
 
-        for (ItemProduto ItemProduto : itensVenda) {
+        for (ItemProduto ItemProduto : itensCompra) {
             try {
                 String sqlString = "UPDATE produto SET qtde = qtde " + (decrementar ? "- 1" : "+ 1") + " WHERE id = ?";
                 PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
@@ -72,15 +72,15 @@ public class DaoVenda {
         }
     }
 
-    private List<ItemProduto> obterItensVenda(String vendaId) {
-        List<ItemProduto> itensVenda = new ArrayList<>();
+    private List<ItemProduto> obterItensCompra(String compraId) {
+        List<ItemProduto> itensCompra = new ArrayList<>();
 
         DataBaseCom.conectar();
-        String sqlString = "SELECT id, id_produto FROM item_produto WHERE id_venda = ?";
+        String sqlString = "SELECT id, id_produto FROM item_produto WHERE id_compra = ?";
 
         try {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, vendaId);
+            ps.setString(1, compraId);
 
             ResultSet rs = ps.executeQuery();
 
@@ -93,14 +93,14 @@ public class DaoVenda {
                 Livro livro = obterLivro(rs.getString("id_produto"));
                 ItemProduto.setLivro(livro.getId());
 
-                // Adiciona o item associado à venda à lista
-                itensVenda.add(ItemProduto);
+                // Adiciona o item associado à Compra à lista
+                itensCompra.add(ItemProduto);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        return itensVenda;
+        return itensCompra;
     }
 
     // Método para obter um livro pelo ID
@@ -127,28 +127,28 @@ public class DaoVenda {
         return livro;
     }
 
-    // Método para alterar uma venda existente no banco de dados
-    public boolean alterar(Venda venda) {
+    // Método para alterar uma Compra existente no banco de dados
+    public boolean alterar(Compra Compra) {
         DataBaseCom.conectar();
 
-        if (findById(venda.getId()) == null)
-            return false; // Retorna false se a venda não existir
+        if (findById(Compra.getId()) == null)
+            return false; // Retorna false se a Compra não existir
 
         try {
-            // Antes de fazer alterações, obtenha a lista de livros associados à venda atual
-            List<String> livrosAntigos = obterLivrosDaVenda(venda.getId());
+            // Antes de fazer alterações, obtenha a lista de livros associados à Compra atual
+            List<String> livrosAntigos = obterLivrosDaCompra(Compra.getId());
 
-            // Atualize a venda
-            String sqlString = "UPDATE venda SET id_cliente=?, data=? WHERE id=?";
+            // Atualize a Compra
+            String sqlString = "UPDATE Compra SET id_cliente=?, data=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
-            ps.setString(1, venda.getIdCliente());
-            ps.setString(2, venda.getData());
-            ps.setString(3, venda.getId());
+            ps.setString(1, Compra.getIdCliente());
+            ps.setString(2, Compra.getData());
+            ps.setString(3, Compra.getId());
             ps.execute();
 
-            // Obtenha a lista de livros associados à venda após a alteração
-            List<String> livrosNovos = obterLivrosDaVenda(venda.getId());
+            // Obtenha a lista de livros associados à Compra após a alteração
+            List<String> livrosNovos = obterLivrosDaCompra(Compra.getId());
 
             // Calcule as diferenças entre as duas listas para determinar os livros
             // adicionados e removidos
@@ -159,8 +159,8 @@ public class DaoVenda {
             livrosAdicionados.removeAll(livrosAntigos);
 
             // Atualize a quantidade de livros adicionando/removendo conforme necessário
-            atualizarQuantidadeLivros(venda.getId(), false);
-            atualizarQuantidadeLivros(venda.getId(), true);
+            atualizarQuantidadeLivros(Compra.getId(), false);
+            atualizarQuantidadeLivros(Compra.getId(), true);
 
             return true; // Retorna true se a alteração for bem-sucedida
         } catch (SQLException ex) {
@@ -170,14 +170,14 @@ public class DaoVenda {
         return false; // Retorna false se falhar
     }
 
-    // Método para obter a lista de livros associados à venda
-    private List<String> obterLivrosDaVenda(String vendaId) {
+    // Método para obter a lista de livros associados à Compra
+    private List<String> obterLivrosDaCompra(String compraId) {
         List<String> livros = new ArrayList<>();
 
         try {
-            String sqlString = "SELECT id_produto FROM item_produto WHERE id_venda=?";
+            String sqlString = "SELECT id_produto FROM item_produto WHERE id_compra=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, vendaId);
+            ps.setString(1, compraId);
 
             ResultSet rs = ps.executeQuery();
 
@@ -191,47 +191,47 @@ public class DaoVenda {
         return livros;
     }
 
-    // Método para buscar uma venda pelo ID no banco de dados
-    public Venda findById(String id) {
+    // Método para buscar uma Compra pelo ID no banco de dados
+    public Compra findById(String id) {
         DataBaseCom.conectar();
-        Venda venda = null;
+        Compra Compra = null;
 
         try {
-            String sqlString = "SELECT * FROM venda WHERE id=?";
+            String sqlString = "SELECT * FROM Compra WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setString(1, id);
 
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                venda = new Venda();
-                venda.setId(rs.getString("id"));
-                venda.setIdCliente(rs.getString("id_cliente"));
-                venda.setData(rs.getString("data"));
+                Compra = new Compra();
+                Compra.setId(rs.getString("id"));
+                Compra.setIdCliente(rs.getString("id_cliente"));
+                Compra.setData(rs.getString("data"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return venda;
+        return Compra;
     }
 
-    // Método para excluir uma venda do banco de dados
-    public boolean excluir(Venda venda) {
+    // Método para excluir uma Compra do banco de dados
+    public boolean excluir(Compra Compra) {
         DataBaseCom.conectar();
-        String sqlString = "DELETE FROM venda WHERE id=?";
+        String sqlString = "DELETE FROM Compra WHERE id=?";
 
         try {
-            // Obtenha a lista de livros associados à venda
-            List<String> livros = obterLivrosDaVenda(venda.getId());
+            // Obtenha a lista de livros associados à Compra
+            List<String> livros = obterLivrosDaCompra(Compra.getId());
 
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, venda.getId());
+            ps.setString(1, Compra.getId());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 // Atualize a quantidade de livros
-                atualizarQuantidadeLivros(venda.getId(), false);
+                atualizarQuantidadeLivros(Compra.getId(), false);
 
                 return true;
             }
@@ -242,21 +242,21 @@ public class DaoVenda {
         return false; // Retorna false se falhar
     }
 
-    // Método para listar todas as venda no banco de dados
-    public List<Venda> listar() {
-        List<Venda> lista = new ArrayList<>();
+    // Método para listar todas as Compra no banco de dados
+    public List<Compra> listar() {
+        List<Compra> lista = new ArrayList<>();
 
         try {
-            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM venda");
+            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM Compra");
 
             while (rs.next()) {
-                Venda venda = new Venda();
-                venda.setId(rs.getString("id"));
-                venda.setIdCliente(rs.getString("id_cliente"));
-                venda.setData(rs.getString("data"));
-                venda.setItens(obterItensVenda(venda.getId()));
+                Compra Compra = new Compra();
+                Compra.setId(rs.getString("id"));
+                Compra.setIdCliente(rs.getString("id_cliente"));
+                Compra.setData(rs.getString("data"));
+                Compra.setItens(obterItensCompra(Compra.getId()));
 
-                lista.add(venda);
+                lista.add(Compra);
             }
         } catch (Exception e) {
             e.printStackTrace();
