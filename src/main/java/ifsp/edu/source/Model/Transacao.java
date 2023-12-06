@@ -1,6 +1,8 @@
 package ifsp.edu.source.Model;
 
 import ifsp.edu.source.Util.GeradorID;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Transacao {
@@ -11,6 +13,7 @@ public abstract class Transacao {
 
     public Transacao() {
         this.id = GeradorID.getNextId().toString();
+        this.itens = new ArrayList<>();
     }
 
     public Transacao(String idCliente, String data, List<ItemProduto> itens) {

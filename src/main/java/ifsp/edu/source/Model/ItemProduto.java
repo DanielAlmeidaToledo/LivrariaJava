@@ -1,18 +1,11 @@
 package ifsp.edu.source.Model;
 
-import ifsp.edu.source.Util.GeradorID;
-
 public class ItemProduto {
     private String id;
-    private String idProduto; // Relação com Livro
-    private String idCompra; // Relação com Compra
+    private String compra;
+    private String livro;
     private int quantidade;
 
-    public ItemProduto() {
-        this.id = GeradorID.getNextId().toString();
-    }
-
-    // Métodos getters e setters
     public String getId() {
         return id;
     }
@@ -21,20 +14,20 @@ public class ItemProduto {
         this.id = id;
     }
 
-    public String getLivro() {
-        return idProduto;
-    }
-
-    public void setLivro(String idProduto) {
-        this.idProduto = idProduto;
-    }
-
     public String getCompra() {
-        return idCompra;
+        return compra;
     }
 
-    public void setCompra(String idCompra) {
-        this.idCompra = idCompra;
+    public void setCompra(String compra) {
+        this.compra = compra;
+    }
+
+    public String getLivro() {
+        return livro;
+    }
+
+    public void setLivro(String livro) {
+        this.livro = livro;
     }
 
     public int getQuantidade() {
@@ -47,7 +40,6 @@ public class ItemProduto {
 
     @Override
     public String toString() {
-        return "ItemProduto [id=" + id + ", idProduto=" + idProduto + ", idCompra=" + idCompra + ", quantidade="
-                + quantidade + "]";
+        return "ItemProduto [id=" + id + ", compra=" + compra + ", livro=" + livro + ", quantidade=" + quantidade + "]";
     }
 }

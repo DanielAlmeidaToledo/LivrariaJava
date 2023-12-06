@@ -27,10 +27,10 @@ public class CompraController {
     // Endpoint para obter uma Compra pelo ID
     @GetMapping("/{id}")
     public ResponseEntity<Compra> obterCompraPorId(@PathVariable String id) {
-        Compra Compra = compraDao.findById(id);
-        if (Compra != null)
+        Compra compra = compraDao.findById(id);
+        if (compra != null)
             // Retorna a Compra com o status HTTP OK (200)
-            return new ResponseEntity<>(Compra, HttpStatus.OK);
+            return new ResponseEntity<>(compra, HttpStatus.OK);
         else
             // Retorna o status HTTP NOT_FOUND (404) se a Compra não for encontrada
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -38,8 +38,8 @@ public class CompraController {
 
     // Endpoint para criar uma nova Compra
     @PostMapping
-    public ResponseEntity<Compra> criarCompra(@Validated @RequestBody Compra Compra) {
-        Compra novaCompra = compraDao.incluir(Compra);
+    public ResponseEntity<Compra> criarCompra(@Validated @RequestBody Compra compra) {
+        Compra novaCompra = compraDao.incluir(compra);
         if (novaCompra != null) {
             // Retorna a nova Compra criada com o status HTTP CREATED (201)
             return new ResponseEntity<>(novaCompra, HttpStatus.CREATED);
@@ -57,11 +57,12 @@ public class CompraController {
             // Atualiza a Compra existente e a retorna com o status HTTP OK (200)
             compraExistente.setIdCliente(novaCompra.getIdCliente());
             compraExistente.setData(novaCompra.getData());
+            compraExistente.setItens(novaCompra.getItens()); // Atualiza os itens
+
             compraDao.alterar(compraExistente);
             return new ResponseEntity<>(compraExistente, HttpStatus.OK);
         } else {
-            // Retorna o status HTTP NOT_FOUND (404) se a Compra a ser atualizada não for
-            // encontrada
+            // Retorna o status HTTP NOT_FOUND (404) se a Compra a ser atualizada não for encontrada
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -69,14 +70,13 @@ public class CompraController {
     // Endpoint para excluir uma Compra pelo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> excluirCompra(@PathVariable String id) {
-        Compra Compra = compraDao.findById(id);
-        if (Compra != null) {
+        Compra compra = compraDao.findById(id);
+        if (compra != null) {
             // Exclui a Compra e retorna o status HTTP OK (200)
-            compraDao.excluir(Compra);
+            compraDao.excluir(compra);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            // Retorna o status HTTP NOT_FOUND (404) se a Compra a ser excluída não for
-            // encontrada
+            // Retorna o status HTTP NOT_FOUND (404) se a Compra a ser excluída não for encontrada
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

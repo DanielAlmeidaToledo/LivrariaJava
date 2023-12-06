@@ -1,146 +1,133 @@
 package ifsp.edu.source.DAL;
 
-import java.util.List;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.sql.SQLException;
 import java.sql.PreparedStatement;
-import ifsp.edu.source.Model.ItemProduto;
-import ifsp.edu.source.Model.Livro;
-import ifsp.edu.source.Model.Compra;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
+
+import ifsp.edu.source.Model.ItemProduto;
 
 @Component
 public class DaoItemCompra {
 
-    // Método para incluir um item de Compra no banco de dados
-    public ItemProduto incluir(ItemProduto ItemProduto) {
+    // Método para incluir um ItemProduto no banco de dados
+    public ItemProduto incluir(ItemProduto itemProduto) {
+        System.out.println(">>> DaoItemCompra.incluir()");
+        System.out.println(">>> itemProduto: " + itemProduto);
+
         DataBaseCom.conectar();
-        String sqlString = "INSERT INTO item_produto (id, id_compra, id_produto, qtde) VALUES (?, ?, ?, ?)";
+        String sqlInserirItemCompra = "INSERT INTO item_produto (id, id_produto, id_compra, qtde) VALUES (?, ?, ?, ?)";
 
         try {
-            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, ItemProduto.getId());
-            ps.setString(2, ItemProduto.getCompra());
-            ps.setString(3, ItemProduto.getLivro());
-            ps.setInt(4, ItemProduto.getQuantidade());
+            // Inserir o ItemProduto
+            PreparedStatement psInserirItemCompra = DataBaseCom.getConnection().prepareStatement(sqlInserirItemCompra);
+            psInserirItemCompra.setString(1, itemProduto.getId());
+            psInserirItemCompra.setString(2, itemProduto.getLivro());
+            psInserirItemCompra.setString(3, itemProduto.getCompra());
+            psInserirItemCompra.setInt(4, itemProduto.getQuantidade());
 
-            if (ps.executeUpdate() > 0) {
-                // Ao incluir, retorne o ItemProduto com os dados atualizados
-                return findById(ItemProduto.getId());
+            System.out.println(">>> itemProduto.getLivro(): " + itemProduto.getLivro());
+
+            int rowsAffectedItemCompra = psInserirItemCompra.executeUpdate();
+
+            if (rowsAffectedItemCompra > 0) {
+                return itemProduto;
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        return null; // Retorna null se a inclusão falhar
+        return null; // Retorna null se falhar
     }
 
-    // Método para alterar um item de Compra existente no banco de dados
-    public boolean alterar(ItemProduto ItemProduto) {
+    // Método para alterar um ItemProduto existente no banco de dados
+    public boolean alterar(ItemProduto itemProduto) {
         DataBaseCom.conectar();
 
-        if (findById(ItemProduto.getId()) == null)
-            return false; // Retorna false se o item de Compra não existir
+        if (findById(itemProduto.getId()) == null)
+            return false; // Retorna false se o ItemProduto não existir
 
         try {
-            String sqlString = "UPDATE item_produto SET id_compra=?, id_produto=?, qtde=? WHERE id=?";
+            // Atualize o ItemProduto
+            String sqlString = "UPDATE item_produto SET id_produto=?, id_compra=?, quantidade=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
-            ps.setString(1, ItemProduto.getCompra());
-            ps.setString(2, ItemProduto.getLivro());
-            ps.setInt(3, ItemProduto.getQuantidade());
-            ps.setString(4, ItemProduto.getId());
+            ps.setString(1, itemProduto.getLivro());
+            ps.setString(2, itemProduto.getCompra());
+            ps.setInt(3, itemProduto.getQuantidade());
+            ps.setString(4, itemProduto.getId());
+            ps.execute();
 
-            return ps.executeUpdate() > 0; // Retorna true se a alteração for bem-sucedida
+            return true; // Retorna true se a alteração for bem-sucedida
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        return false; // Retorna false se não existir
+        return false; // Retorna false se falhar
     }
 
-    // Método para buscar um item de Compra pelo ID no banco de dados
+    // Método para buscar um ItemProduto pelo ID no banco de dados
     public ItemProduto findById(String id) {
         DataBaseCom.conectar();
-        ItemProduto ItemProduto = null;
+        ItemProduto itemProduto = null;
 
         try {
-            String sqlString = "SELECT ip.id, ip.id_compra, ip.id_produto, l.nome as nome_livro, v.data as data_compra FROM item_produto ip "
-                    +
-                    "INNER JOIN produto l ON ip.id_produto = l.id " +
-                    "INNER JOIN Compra v ON ip.id_compra = v.id " +
-                    "WHERE ip.id=?";
+            String sqlString = "SELECT * FROM item_produto WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setString(1, id);
 
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                ItemProduto = new ItemProduto();
-                ItemProduto.setId(rs.getString("id"));
-
-                Livro livro = new Livro();
-                livro.setId(rs.getString("id_produto"));
-                livro.setNome(rs.getString("nome_livro"));
-                ItemProduto.setLivro(livro.getId());
-
-                Compra Compra = new Compra();
-                Compra.setId(rs.getString("id_compra"));
-                Compra.setData(rs.getString("data_compra"));
-                ItemProduto.setCompra(Compra.getId());
+                itemProduto = new ItemProduto();
+                itemProduto.setId(rs.getString("id"));
+                itemProduto.setLivro(rs.getString("id_produto"));
+                itemProduto.setCompra(rs.getString("id_compra"));
+                itemProduto.setQuantidade(rs.getInt("quantidade"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return ItemProduto;
+        return itemProduto;
     }
 
-    // Método para excluir um item de Compra pelo ID
-    public boolean excluir(ItemProduto ItemProduto) {
+    // Método para excluir um ItemProduto do banco de dados
+    public boolean excluir(ItemProduto itemProduto) {
         DataBaseCom.conectar();
         String sqlString = "DELETE FROM item_produto WHERE id=?";
 
         try {
-            // Retorna true se a exclusão for bem-sucedida
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, ItemProduto.getId());
-            return ps.executeUpdate() > 0;
+            ps.setString(1, itemProduto.getId());
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0; // Retorna true se a exclusão for bem-sucedida
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        return false; // Retorna false se não existir
+        return false; // Retorna false se falhar
     }
 
-    // Método para listar todos os itens de Compra no banco de dados
+    // Método para listar todos os ItemProduto no banco de dados
     public List<ItemProduto> listar() {
         List<ItemProduto> lista = new ArrayList<>();
 
         try {
-            String sqlString = "SELECT ip.id, ip.id_compra, ip.id_produto, l.nome as nome_livro, v.data as data_compra FROM item_produto ip "
-                    +
-                    "INNER JOIN produto l ON ip.id_produto = l.id " +
-                    "INNER JOIN Compra v ON ip.id_compra = v.id";
-            ResultSet rs = DataBaseCom.getStatement().executeQuery(sqlString);
+            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM item_produto");
 
             while (rs.next()) {
-                ItemProduto ItemProduto = new ItemProduto();
-                ItemProduto.setId(rs.getString("id"));
+                ItemProduto itemProduto = new ItemProduto();
+                itemProduto.setId(rs.getString("id"));
+                itemProduto.setLivro(rs.getString("id_produto"));
+                itemProduto.setCompra(rs.getString("id_compra"));
+                itemProduto.setQuantidade(rs.getInt("quantidade"));
 
-                Livro livro = new Livro();
-                livro.setId(rs.getString("id_produto"));
-                livro.setNome(rs.getString("nome_livro"));
-                ItemProduto.setLivro(livro.getId());
-
-                Compra Compra = new Compra();
-                Compra.setId(rs.getString("id_compra"));
-                Compra.setData(rs.getString("data_compra"));
-                ItemProduto.setCompra(Compra.getId());
-
-                lista.add(ItemProduto);
+                lista.add(itemProduto);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -12,7 +12,7 @@ import ifsp.edu.source.DAL.DaoItemCompra;
 import ifsp.edu.source.Model.ItemProduto;
 
 @RestController
-@RequestMapping("/item-Compra")
+@RequestMapping("/item-produto")
 public class ItemCompraController {
 
     @Autowired
@@ -27,10 +27,10 @@ public class ItemCompraController {
     // Endpoint para obter um item de Compra pelo ID
     @GetMapping("/{id}")
     public ResponseEntity<ItemProduto> obterItemCompraPorId(@PathVariable String id) {
-        ItemProduto ItemProduto = itemCompraDao.findById(id);
-        if (ItemProduto != null)
+        ItemProduto itemProduto = itemCompraDao.findById(id);
+        if (itemProduto != null)
             // Retorna o item de Compra com o status HTTP OK (200)
-            return new ResponseEntity<>(ItemProduto, HttpStatus.OK);
+            return new ResponseEntity<>(itemProduto, HttpStatus.OK);
         else
             // Retorna o status HTTP NOT_FOUND (404) se o item de Compra não for encontrado
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -38,8 +38,10 @@ public class ItemCompraController {
 
     // Endpoint para criar um novo item de Compra
     @PostMapping
-    public ResponseEntity<ItemProduto> criarItemCompra(@Validated @RequestBody ItemProduto ItemProduto) {
-        ItemProduto novoItemCompra = itemCompraDao.incluir(ItemProduto);
+    public ResponseEntity<ItemProduto> criarItemCompra(@RequestBody ItemProduto itemProduto) {
+        System.out.println("------->>>>>> " + itemProduto);
+
+        ItemProduto novoItemCompra = itemCompraDao.incluir(itemProduto);
         if (novoItemCompra != null) {
             // Retorna o novo item de Compra criado com o status HTTP CREATED (201)
             return new ResponseEntity<>(novoItemCompra, HttpStatus.CREATED);
@@ -58,6 +60,7 @@ public class ItemCompraController {
             // Atualiza o item de Compra existente e o retorna com o status HTTP OK (200)
             itemCompraExistente.setLivro(novoItemCompra.getLivro());
             itemCompraExistente.setCompra(novoItemCompra.getCompra());
+            itemCompraExistente.setQuantidade(novoItemCompra.getQuantidade());
             // Certifique-se de implementar a lógica específica para atualização no seu DAO
             itemCompraDao.alterar(itemCompraExistente);
             return new ResponseEntity<>(itemCompraExistente, HttpStatus.OK);
@@ -71,10 +74,10 @@ public class ItemCompraController {
     // Endpoint para excluir um item de Compra pelo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> excluirItemCompra(@PathVariable String id) {
-        ItemProduto ItemProduto = itemCompraDao.findById(id);
-        if (ItemProduto != null) {
+        ItemProduto itemProduto = itemCompraDao.findById(id);
+        if (itemProduto != null) {
             // Exclui o item de Compra e retorna o status HTTP OK (200)
-            itemCompraDao.excluir(ItemProduto);
+            itemCompraDao.excluir(itemProduto);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             // Retorna o status HTTP NOT_FOUND (404) se o item de Compra a ser excluído não
