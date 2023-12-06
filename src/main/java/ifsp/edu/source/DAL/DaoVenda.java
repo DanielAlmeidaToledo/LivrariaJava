@@ -30,6 +30,9 @@ public class DaoVenda {
             if (rowsAffectedVenda > 0) {
                 // Obter a lista de itens associados à venda
                 List<ItemProduto> itensVenda = venda.getItensVenda();
+                // printa a lista de itens
+                System.out.println("Lista de itens da venda: ");
+                System.out.println(venda.getItensVenda());
 
                 // Inserir os itens associados à venda chamando a controller de ItemProduto
                 DaoItemVenda daoItemVenda = new DaoItemVenda();
@@ -251,6 +254,7 @@ public class DaoVenda {
                 venda.setId(rs.getString("id"));
                 venda.setIdCliente(rs.getString("id_cliente"));
                 venda.setData(rs.getString("data"));
+                venda.setItens(obterItensVenda(venda.getId()));
 
                 lista.add(venda);
             }

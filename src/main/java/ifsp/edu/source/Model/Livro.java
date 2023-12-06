@@ -1,7 +1,5 @@
 package ifsp.edu.source.Model;
 
-import java.util.List;
-import java.util.ArrayList;
 import ifsp.edu.source.Util.GeradorID;
 
 public class Livro {
