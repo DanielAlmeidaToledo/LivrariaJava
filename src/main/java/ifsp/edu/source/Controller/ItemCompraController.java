@@ -39,8 +39,6 @@ public class ItemCompraController {
     // Endpoint para criar um novo item de Compra
     @PostMapping
     public ResponseEntity<ItemProduto> criarItemCompra(@RequestBody ItemProduto itemProduto) {
-        System.out.println("------->>>>>> " + itemProduto);
-
         ItemProduto novoItemCompra = itemCompraDao.incluir(itemProduto);
         if (novoItemCompra != null) {
             // Retorna o novo item de Compra criado com o status HTTP CREATED (201)

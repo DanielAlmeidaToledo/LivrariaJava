@@ -35,10 +35,17 @@ public class DaoCompra {
                 // Inserir os itens associados à Compra chamando a controller de ItemProduto
                 DaoItemCompra daoItemCompra = new DaoItemCompra();
                 for (ItemProduto itemProduto : itensCompra) {
-                    System.out.println(">>> itemProduto: " + itemProduto);
+
+                    String sqlConsultaLivro = "SELECT * FROM produto WHERE id = ?";
+                    PreparedStatement psConsultaLivro = DataBaseCom.getConnection().prepareStatement(sqlConsultaLivro);
+
+                    psConsultaLivro.setString(1, itemProduto.getLivro());
+                    ResultSet rs = psConsultaLivro.executeQuery();
 
                     // Associar o item à Compra antes de incluir no banco de dados
                     itemProduto.setCompra(compra.getId());
+                    itemProduto.setNomeProduto(rs.getString("nome"));
+                    itemProduto.setPreco(rs.getDouble("preco"));
                     
                     // Incluir o item de Compra no banco de dados
                     daoItemCompra.incluir(itemProduto);
@@ -75,29 +82,35 @@ public class DaoCompra {
 
     private List<ItemProduto> obterItensCompra(String compraId) {
         List<ItemProduto> itensCompra = new ArrayList<>();
-
+    
         DataBaseCom.conectar();
-        String sqlString = "SELECT id, id_produto, qtde FROM item_produto WHERE id_compra = ?";
-
+        String sqlString = "SELECT i.id, i.id_produto, i.qtde, p.nome AS nome_produto, p.preco "
+                         + "FROM item_produto i "
+                         + "JOIN produto p ON i.id_produto = p.id "
+                         + "WHERE i.id_compra = ?";
+    
         try {
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
             ps.setString(1, compraId);
-
+    
             ResultSet rs = ps.executeQuery();
-
+    
             while (rs.next()) {
                 ItemProduto itemProduto = new ItemProduto();
                 itemProduto.setId(rs.getString("id"));
                 itemProduto.setLivro(rs.getString("id_produto"));
                 itemProduto.setQuantidade(rs.getInt("qtde"));
-
+                itemProduto.setNomeProduto(rs.getString("nome_produto"));
+                itemProduto.setPreco(rs.getDouble("preco"));
+                itemProduto.setCompra(compraId);
+    
                 // Adiciona o item associado à Compra à lista
                 itensCompra.add(itemProduto);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
+    
         return itensCompra;
     }
 

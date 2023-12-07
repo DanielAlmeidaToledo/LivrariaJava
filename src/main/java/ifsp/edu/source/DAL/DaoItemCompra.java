@@ -15,9 +15,6 @@ public class DaoItemCompra {
 
     // Método para incluir um ItemProduto no banco de dados
     public ItemProduto incluir(ItemProduto itemProduto) {
-        System.out.println(">>> DaoItemCompra.incluir()");
-        System.out.println(">>> itemProduto: " + itemProduto);
-
         DataBaseCom.conectar();
         String sqlInserirItemCompra = "INSERT INTO item_produto (id, id_produto, id_compra, qtde) VALUES (?, ?, ?, ?)";
 
@@ -28,8 +25,6 @@ public class DaoItemCompra {
             psInserirItemCompra.setString(2, itemProduto.getLivro());
             psInserirItemCompra.setString(3, itemProduto.getCompra());
             psInserirItemCompra.setInt(4, itemProduto.getQuantidade());
-
-            System.out.println(">>> itemProduto.getLivro(): " + itemProduto.getLivro());
 
             int rowsAffectedItemCompra = psInserirItemCompra.executeUpdate();
 
