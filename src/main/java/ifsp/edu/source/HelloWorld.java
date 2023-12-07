@@ -14,13 +14,13 @@ public class HelloWorld {
 	/*
 	 * Estão faltando algumas coisas no sistema.
 	 * -Dao de Produtos
-	 * -Dao de ItensCompra
-	 * -Dao de Compra
-	 * -Model de Compra
+	 * -Dao de ItensVenda
+	 * -Dao de Venda
+	 * -Model de Venda
 	 * -Entre outros.
 	 * O trabalho consiste em terminar de elaborar o sistema para realizar uma
-	 * compra
+	 * venda
 	 * Depois, elaborar a parte completa para a venda, usando a abstração para
-	 * reaproveitar o codigo da compra.
+	 * reaproveitar o codigo da venda.
 	 */
 }

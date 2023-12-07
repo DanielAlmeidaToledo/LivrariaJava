@@ -11,24 +11,24 @@ import org.springframework.stereotype.Component;
 import ifsp.edu.source.Model.ItemProduto;
 
 @Component
-public class DaoItemCompra {
+public class DaoItemVenda {
 
     // Método para incluir um ItemProduto no banco de dados
     public ItemProduto incluir(ItemProduto itemProduto) {
         DataBaseCom.conectar();
-        String sqlInserirItemCompra = "INSERT INTO item_produto (id, id_produto, id_compra, qtde) VALUES (?, ?, ?, ?)";
+        String sqlInserirItemVenda = "INSERT INTO item_produto (id, id_produto, id_venda, qtde) VALUES (?, ?, ?, ?)";
 
         try {
             // Inserir o ItemProduto
-            PreparedStatement psInserirItemCompra = DataBaseCom.getConnection().prepareStatement(sqlInserirItemCompra);
-            psInserirItemCompra.setString(1, itemProduto.getId());
-            psInserirItemCompra.setString(2, itemProduto.getLivro());
-            psInserirItemCompra.setString(3, itemProduto.getCompra());
-            psInserirItemCompra.setInt(4, itemProduto.getQuantidade());
+            PreparedStatement psInserirItemVenda = DataBaseCom.getConnection().prepareStatement(sqlInserirItemVenda);
+            psInserirItemVenda.setString(1, itemProduto.getId());
+            psInserirItemVenda.setString(2, itemProduto.getLivro());
+            psInserirItemVenda.setString(3, itemProduto.getVenda());
+            psInserirItemVenda.setInt(4, itemProduto.getQuantidade());
 
-            int rowsAffectedItemCompra = psInserirItemCompra.executeUpdate();
+            int rowsAffectedItemVenda = psInserirItemVenda.executeUpdate();
 
-            if (rowsAffectedItemCompra > 0) {
+            if (rowsAffectedItemVenda > 0) {
                 return itemProduto;
             }
         } catch (SQLException ex) {
@@ -47,11 +47,11 @@ public class DaoItemCompra {
 
         try {
             // Atualize o ItemProduto
-            String sqlString = "UPDATE item_produto SET id_produto=?, id_compra=?, quantidade=? WHERE id=?";
+            String sqlString = "UPDATE item_produto SET id_produto=?, id_venda=?, quantidade=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
             ps.setString(1, itemProduto.getLivro());
-            ps.setString(2, itemProduto.getCompra());
+            ps.setString(2, itemProduto.getVenda());
             ps.setInt(3, itemProduto.getQuantidade());
             ps.setString(4, itemProduto.getId());
             ps.execute();
@@ -80,7 +80,7 @@ public class DaoItemCompra {
                 itemProduto = new ItemProduto();
                 itemProduto.setId(rs.getString("id"));
                 itemProduto.setLivro(rs.getString("id_produto"));
-                itemProduto.setCompra(rs.getString("id_compra"));
+                itemProduto.setVenda(rs.getString("id_venda"));
                 itemProduto.setQuantidade(rs.getInt("quantidade"));
             }
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class DaoItemCompra {
                 ItemProduto itemProduto = new ItemProduto();
                 itemProduto.setId(rs.getString("id"));
                 itemProduto.setLivro(rs.getString("id_produto"));
-                itemProduto.setCompra(rs.getString("id_compra"));
+                itemProduto.setVenda(rs.getString("id_venda"));
                 itemProduto.setQuantidade(rs.getInt("quantidade"));
 
                 lista.add(itemProduto);

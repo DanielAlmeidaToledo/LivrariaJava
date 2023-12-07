@@ -2,7 +2,7 @@ package ifsp.edu.source.Model;
 
 import java.util.List;
 
-public class Compra extends Transacao {
+public class Venda extends Transacao {
 
     private List<ItemProduto> itens;
 
@@ -16,6 +16,6 @@ public class Compra extends Transacao {
 
     @Override
     public String toString() {
-        return "Compra [id=" + id + ", idCliente=" + idCliente + ", data=" + data + ", itens=" + itens + "]";
+        return "Venda [id=" + id + ", idCliente=" + idCliente + ", data=" + data + ", itens=" + itens + "]";
     }
 }
