@@ -2,9 +2,9 @@
 
 ## Pessoa (http://localhost:8080/pessoa)
 
-### [GET]
+#### [GET]
 
-### [POST]
+#### [POST]
 
 ```
 {
@@ -14,9 +14,9 @@
 
 ## Livro (http://localhost:8080/livro)
 
-### [GET]
+#### [GET]
 
-### [POST]
+#### [POST]
 
 ```
 {
@@ -28,9 +28,9 @@
 
 ## Venda (http://localhost:8080/venda)
 
-### [GET]
+#### [GET]
 
-### [POST]
+#### [POST]
 
 ```
 {
