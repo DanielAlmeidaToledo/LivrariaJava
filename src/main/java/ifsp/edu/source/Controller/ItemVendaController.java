@@ -9,10 +9,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import ifsp.edu.source.DAL.DaoItemVenda;
-import ifsp.edu.source.Model.ItemProduto;
+import ifsp.edu.source.Model.ItemVenda;
 
 @RestController
-@RequestMapping("/item-produto")
+@RequestMapping("/item-venda")
 public class ItemVendaController {
 
     @Autowired
@@ -20,17 +20,17 @@ public class ItemVendaController {
 
     // Endpoint para obter uma lista de todos os itens de Venda
     @GetMapping
-    public List<ItemProduto> listarItensVenda() {
+    public List<ItemVenda> listarItensVenda() {
         return itemVendaDao.listar();
     }
 
     // Endpoint para obter um item de Venda pelo ID
     @GetMapping("/{id}")
-    public ResponseEntity<ItemProduto> obterItemVendaPorId(@PathVariable String id) {
-        ItemProduto itemProduto = itemVendaDao.findById(id);
-        if (itemProduto != null)
+    public ResponseEntity<ItemVenda> obterItemVendaPorId(@PathVariable String id) {
+        ItemVenda itemVenda = itemVendaDao.findById(id);
+        if (itemVenda != null)
             // Retorna o item de Venda com o status HTTP OK (200)
-            return new ResponseEntity<>(itemProduto, HttpStatus.OK);
+            return new ResponseEntity<>(itemVenda, HttpStatus.OK);
         else
             // Retorna o status HTTP NOT_FOUND (404) se o item de Venda não for encontrado
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -38,8 +38,8 @@ public class ItemVendaController {
 
     // Endpoint para criar um novo item de Venda
     @PostMapping
-    public ResponseEntity<ItemProduto> criarItemVenda(@RequestBody ItemProduto itemProduto) {
-        ItemProduto novoItemVenda = itemVendaDao.incluir(itemProduto);
+    public ResponseEntity<ItemVenda> criarItemVenda(@RequestBody ItemVenda itemVenda) {
+        ItemVenda novoItemVenda = itemVendaDao.incluir(itemVenda);
         if (novoItemVenda != null) {
             // Retorna o novo item de Venda criado com o status HTTP CREATED (201)
             return new ResponseEntity<>(novoItemVenda, HttpStatus.CREATED);
@@ -51,9 +51,9 @@ public class ItemVendaController {
 
     // Endpoint para atualizar um item de Venda existente pelo ID
     @PutMapping("/{id}")
-    public ResponseEntity<ItemProduto> atualizarItemVenda(@PathVariable String id,
-            @Validated @RequestBody ItemProduto novoItemVenda) {
-        ItemProduto itemVendaExistente = itemVendaDao.findById(id);
+    public ResponseEntity<ItemVenda> atualizarItemVenda(@PathVariable String id,
+            @Validated @RequestBody ItemVenda novoItemVenda) {
+        ItemVenda itemVendaExistente = itemVendaDao.findById(id);
         if (itemVendaExistente != null) {
             // Atualiza o item de Venda existente e o retorna com o status HTTP OK (200)
             itemVendaExistente.setLivro(novoItemVenda.getLivro());
@@ -72,10 +72,10 @@ public class ItemVendaController {
     // Endpoint para excluir um item de Venda pelo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> excluirItemVenda(@PathVariable String id) {
-        ItemProduto itemProduto = itemVendaDao.findById(id);
-        if (itemProduto != null) {
+        ItemVenda itemVenda = itemVendaDao.findById(id);
+        if (itemVenda != null) {
             // Exclui o item de Venda e retorna o status HTTP OK (200)
-            itemVendaDao.excluir(itemProduto);
+            itemVendaDao.excluir(itemVenda);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             // Retorna o status HTTP NOT_FOUND (404) se o item de Venda a ser excluído não

@@ -2,15 +2,15 @@ package ifsp.edu.source.Model;
 
 import ifsp.edu.source.Util.GeradorID;
 
-public class ItemProduto {
+public class ItemCompra {
     private String id;
-    private String idVenda;
+    private String idCompra;
     private String idLivro;
     private int quantidade;
     private String nomeProduto;
     private double preco;
 
-    public ItemProduto() {
+    public ItemCompra() {
         this.id = GeradorID.getNextId().toString();
     }
 
@@ -22,12 +22,12 @@ public class ItemProduto {
         this.id = id;
     }
 
-    public String getVenda() {
-        return idVenda;
+    public String getCompra() {
+        return idCompra;
     }
 
-    public void setVenda(String venda) {
-        this.idVenda = venda;
+    public void setCompra(String compra) {
+        this.idCompra = compra;
     }
 
     public String getLivro() {
@@ -64,7 +64,7 @@ public class ItemProduto {
 
     @Override
     public String toString() {
-        return "ItemProduto [id=" + id + ", idVenda=" + idVenda + ", idLivro=" + idLivro + ", quantidade=" + quantidade
+        return "ItemCompra [id=" + id + ", idCompra=" + idCompra + ", idLivro=" + idLivro + ", quantidade=" + quantidade
                 + "]";
     }
 }

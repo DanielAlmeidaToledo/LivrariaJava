@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 // Gerencia a conexão e criação de tabelas no banco de dados SQLite.
 // Singleton para garantir uma única instância de conexão durante a execução.
 // Autor: Daniel Toledo
+// Autor: Rafael Cerqueira
 public class DataBaseCom {
 
     private static Connection connection = null;
@@ -52,11 +53,15 @@ public class DataBaseCom {
         try {
             statement.executeUpdate("create table if not exists pessoa (id TEXT PRIMARY KEY, nome TEXT)");
             statement.executeUpdate(
+                "create table if not exists produto (id TEXT  PRIMARY KEY, nome TEXT, qtde INTEGER, preco REAL)");
+            statement.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS venda (id TEXT PRIMARY KEY, id_cliente TEXT, data TEXT)");
             statement.executeUpdate(
-                    "create table if not exists produto (id TEXT  PRIMARY KEY, nome TEXT, qtde INTEGER, preco REAL)");
+                    "create table if not exists item_venda (id TEXT  PRIMARY KEY, id_venda TEXT, id_produto TEXT, qtde INTEGER)");
             statement.executeUpdate(
-                    "create table if not exists item_produto (id TEXT  PRIMARY KEY, id_venda TEXT, id_produto TEXT, qtde INTEGER)");
+                    "CREATE TABLE IF NOT EXISTS compra (id TEXT PRIMARY KEY, id_cliente TEXT, data TEXT)");
+            statement.executeUpdate(
+                    "create table if not exists item_compra (id TEXT  PRIMARY KEY, id_compra TEXT, id_produto TEXT, qtde INTEGER)");
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

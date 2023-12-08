@@ -28,9 +28,7 @@ public class DaoPessoa {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            DataBaseCom.close();
-        }
+        } 
 
         return null; // Retorna null se falhar
     }
@@ -53,8 +51,6 @@ public class DaoPessoa {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            DataBaseCom.close();
         }
 
         return false; // Retorna false se falhar
@@ -82,8 +78,6 @@ public class DaoPessoa {
             return pessoa; // Retorna a pessoa ou null se não encontrada
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            DataBaseCom.close();
         }
 
         return null; // Retorna null se falhar
@@ -103,8 +97,6 @@ public class DaoPessoa {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            DataBaseCom.close();
         }
 
         return false; // Retorna false se falhar
@@ -125,8 +117,6 @@ public class DaoPessoa {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            DataBaseCom.close();
         }
 
         return lista; // Retorna a lista de pessoas

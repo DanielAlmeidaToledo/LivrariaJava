@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Venda extends Transacao {
 
-    private List<ItemProduto> itens;
+    private List<ItemVenda> itens;
 
-    public List<ItemProduto> getItens() {
+    public List<ItemVenda> getItens() {
         return itens;
     }
 
-    public void setItens(List<ItemProduto> itens) {
+    public void setItens(List<ItemVenda> itens) {
         this.itens = itens;
     }
 
