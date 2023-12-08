@@ -120,45 +120,71 @@ public class DaoVenda {
     // Método para alterar uma Venda existente no banco de dados
     public boolean alterar(Venda venda) {
         DataBaseCom.conectar();
-
+    
         if (findById(venda.getId()) == null)
             return false; // Retorna false se a Venda não existir
-
+    
         try {
             // Antes de fazer alterações, obtenha a lista de livros associados à Venda atual
             List<String> livrosAntigos = obterLivrosDaVenda(venda.getId());
-
+    
             // Atualize a Venda
             String sqlString = "UPDATE venda SET id_cliente=?, data=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-
+    
             ps.setString(1, venda.getIdCliente());
             ps.setString(2, venda.getData());
             ps.setString(3, venda.getId());
-            ps.execute();
+            int rowsAffectedVenda = ps.executeUpdate();
+    
+            if (rowsAffectedVenda > 0) {
+                // Obter a lista de itens associados à Venda
+                List<ItemProduto> itensVenda = venda.getItens();
+    
+                // Inserir os itens associados à Venda chamando a controller de ItemProduto
+                DaoItemVenda daoItemVenda = new DaoItemVenda();
+                for (ItemProduto itemProduto : itensVenda) {
+                    String idLivro = itemProduto.getLivro();
+    
+                    // Consultar a quantidade atual do livro na tabela produto
+                    int qtdeAtual = obterQuantidadeLivro(idLivro);
+                    int quantidadeAlterada = itemProduto.getQuantidade() - obterQuantidadeLivroVenda(idLivro, venda.getId());
 
-            // Obtenha a lista de livros associados à Venda após a alteração
-            List<String> livrosNovos = obterLivrosDaVenda(venda.getId());
+                    int quantidadeAtualizada = qtdeAtual - quantidadeAlterada;
+    
+                    // Atualizar a quantidade de livros
+                    atualizarQuantidadeLivros(idLivro,  qtdeAtual - quantidadeAtualizada);
 
-            // Calcule as diferenças entre as duas listas para determinar os livros
-            // adicionados e removidos
-            List<String> livrosRemovidos = new ArrayList<>(livrosAntigos);
-            livrosRemovidos.removeAll(livrosNovos);
+                    if(quantidadeAtualizada < 0) {
+                        // excluir o item de venda
+                        daoItemVenda.excluir(itemProduto);
+                    } else {
+                        // Atualizar ou incluir o item de venda
+                        daoItemVenda.incluir(itemProduto);
+                    }
+                }
+    
+                // Remover livros que não estão mais na venda
+                for (String livroAntigo : livrosAntigos) {
+                    if (!itensVenda.contains(livroAntigo)) {
 
-            List<String> livrosAdicionados = new ArrayList<>(livrosNovos);
-            livrosAdicionados.removeAll(livrosAntigos);
-
-            // Atualize a quantidade de livros adicionando/removendo conforme necessário
-            // atualizarQuantidadeLivros(venda.getId(), false);
-            // atualizarQuantidadeLivros(venda.getId(), true);
-
-            return true; // Retorna true se a alteração for bem-sucedida
+                        // Consultar a quantidade atual do livro na tabela produto
+                        int qtdeAtual = obterQuantidadeLivro(livroAntigo);
+    
+                        // Atualizar a quantidade de livros
+                        atualizarQuantidadeLivros(livroAntigo, qtdeAtual);
+                    }
+                }
+    
+                return true;
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
+    
         return false; // Retorna false se falhar
     }
+    
 
     // Método para obter a lista de livros associados à Venda
     private List<String> obterLivrosDaVenda(String vendaId) {
@@ -206,6 +232,51 @@ public class DaoVenda {
 
         return venda;
     }
+
+    // Método para buscar a quantidade de livros na tabela produto pelo ID do livro
+    private int obterQuantidadeLivro(String livroId) {
+        DataBaseCom.conectar();
+        String sqlString = "SELECT qtde FROM produto WHERE id = ?";
+
+        try {
+            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
+            ps.setString(1, livroId);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("qtde");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return 0; // Retorna 0 se falhar
+    }
+
+    private int obterQuantidadeLivroVenda(String livroId, String vendaId) {
+        DataBaseCom.conectar();
+        int quantidade = 0;
+    
+        String sqlString = "SELECT qtde FROM item_produto WHERE id_produto = ? AND id_venda = ?";
+    
+        try {
+            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
+            ps.setString(1, livroId);
+            ps.setString(2, vendaId);
+    
+            ResultSet rs = ps.executeQuery();
+    
+            if (rs.next()) {
+                quantidade = rs.getInt("qtde");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    
+        return quantidade;
+    }
+    
 
     // Método para excluir uma Venda do banco de dados
     public boolean excluir(Venda venda) {
