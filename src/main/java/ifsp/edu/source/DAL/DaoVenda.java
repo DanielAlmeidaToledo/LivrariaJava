@@ -28,8 +28,10 @@ public class DaoVenda {
                 int rowsAffectedVenda = psInserirVenda.executeUpdate();
 
                 if (rowsAffectedVenda > 0) {
-                    List<ItemVenda> itensVenda = venda.getItens();
+                    List<ItemVenda> itensVenda = venda.getItensVenda();
                     DaoItemVenda daoItemVenda = new DaoItemVenda();
+
+                    System.out.println("itensVenda: " + itensVenda);
 
                     for (ItemVenda itemVenda : itensVenda) {
                         String sqlConsultaLivro = "SELECT * FROM produto WHERE id = ?";
@@ -41,6 +43,8 @@ public class DaoVenda {
                                 itemVenda.setVenda(venda.getId());
                                 itemVenda.setNomeProduto(rs.getString("nome"));
                                 itemVenda.setPreco(rs.getDouble("preco"));
+
+                                System.out.println("itemVenda: " + itemVenda);
 
                                 daoItemVenda.incluir(itemVenda);
 
@@ -142,7 +146,7 @@ public class DaoVenda {
                     }
 
                     // Adiciona os novos itens associados à Venda
-                    for (ItemVenda itemVenda : venda.getItens()) {
+                    for (ItemVenda itemVenda : venda.getItensVenda()) {
                         // Se o nome e o preço forem fornecidos no body, atualiza; caso contrário,
                         // mantém os dados existentes
                         if (itemVenda.getNomeProduto() == null || itemVenda.getPreco() == 0) {
@@ -254,7 +258,7 @@ public class DaoVenda {
                 venda.setId(rs.getString("id"));
                 venda.setIdCliente(rs.getString("id_cliente"));
                 venda.setData(rs.getString("data"));
-                venda.setItens(obterItensVenda(venda.getId()));
+                venda.setItensVenda(obterItensVenda(venda.getId()));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -320,7 +324,7 @@ public class DaoVenda {
             ps.setString(1, venda.getId());
 
             // Realiza a contagem de quantidade de livros por produto
-            for (ItemVenda itemVenda : venda.getItens()) {
+            for (ItemVenda itemVenda : venda.getItensVenda()) {
                 String sqlConsultaLivro = "SELECT * FROM produto WHERE id = ?";
                 PreparedStatement psConsultaLivro = DataBaseCom.getConnection().prepareStatement(sqlConsultaLivro);
 
@@ -362,7 +366,7 @@ public class DaoVenda {
                     venda.setId(rs.getString("id"));
                     venda.setIdCliente(rs.getString("id_cliente"));
                     venda.setData(rs.getString("data"));
-                    venda.setItens(obterItensVenda(venda.getId()));
+                    venda.setItensVenda(obterItensVenda(venda.getId()));
 
                     lista.add(venda);
                 }

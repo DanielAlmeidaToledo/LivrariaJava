@@ -1,21 +1,25 @@
 package ifsp.edu.source.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Venda extends Transacao {
+    private List<ItemVenda> itemVenda;
 
-    private List<ItemVenda> itens;
-
-    public List<ItemVenda> getItens() {
-        return itens;
+    public Venda() {
+        this.itemVenda = new ArrayList<>();
     }
 
-    public void setItens(List<ItemVenda> itens) {
-        this.itens = itens;
+    public List<ItemVenda> getItensVenda() {
+        return itemVenda;
+    }
+
+    public void setItensVenda(List<ItemVenda> itemVenda) {
+        this.itemVenda = itemVenda;
     }
 
     @Override
     public String toString() {
-        return "Venda [id=" + id + ", idCliente=" + idCliente + ", data=" + data + ", itens=" + itens + "]";
+        return "Venda [id=" + id + ", idCliente=" + idCliente + ", data=" + data + ", itemVenda=" + itemVenda + "]";
     }
 }

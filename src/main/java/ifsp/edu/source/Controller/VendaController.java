@@ -57,7 +57,7 @@ public class VendaController {
             // Atualiza a Venda existente e a retorna com o status HTTP OK (200)
             vendaExistente.setIdCliente(novaVenda.getIdCliente());
             vendaExistente.setData(novaVenda.getData());
-            vendaExistente.setItens(novaVenda.getItens()); // Atualiza os itens
+            vendaExistente.setItensVenda(novaVenda.getItensVenda()); // Atualiza os itens
 
             vendaDao.alterar(vendaExistente);
             return new ResponseEntity<>(vendaExistente, HttpStatus.OK);
