@@ -145,22 +145,36 @@ public class DaoVenda {
                 DaoItemVenda daoItemVenda = new DaoItemVenda();
                 for (ItemProduto itemProduto : itensVenda) {
                     String idLivro = itemProduto.getLivro();
-    
+
+                    String sqlConsultaLivro = "SELECT * FROM produto WHERE id = ?";
+                    PreparedStatement psConsultaLivro = DataBaseCom.getConnection().prepareStatement(sqlConsultaLivro);
+                    psConsultaLivro.setString(1, itemProduto.getLivro());
+                    ResultSet rs = psConsultaLivro.executeQuery();
+
+                    itemProduto.setVenda(venda.getId());
+                    itemProduto.setNomeProduto(rs.getString("nome"));
+                    itemProduto.setPreco(rs.getDouble("preco"));
+
                     // Consultar a quantidade atual do livro na tabela produto
                     int qtdeAtual = obterQuantidadeLivro(idLivro);
                     int quantidadeAlterada = itemProduto.getQuantidade() - obterQuantidadeLivroVenda(idLivro, venda.getId());
-
                     int quantidadeAtualizada = qtdeAtual - quantidadeAlterada;
-    
+
+                    System.out.println("\n# Nome do livro: " + itemProduto.getNomeProduto());
+                    System.out.println("> Quantidade atual: " + qtdeAtual);
+                    System.out.println("> Quantidade alterada: " + quantidadeAlterada);
+                    System.out.println("> itemProduto.getQuantidade(): " + itemProduto.getQuantidade());
+                    System.out.println("> obterQuantidadeLivroVenda(idLivro, venda.getId()): " + obterQuantidadeLivroVenda(idLivro, venda.getId()));
+
                     // Atualizar a quantidade de livros
-                    atualizarQuantidadeLivros(idLivro,  qtdeAtual - quantidadeAtualizada);
+                    atualizarQuantidadeLivros(idLivro, quantidadeAtualizada);
 
                     if(quantidadeAtualizada < 0) {
                         // excluir o item de venda
                         daoItemVenda.excluir(itemProduto);
                     } else {
                         // Atualizar ou incluir o item de venda
-                        daoItemVenda.incluir(itemProduto);
+                        daoItemVenda.alterar(itemProduto);
                     }
                 }
     

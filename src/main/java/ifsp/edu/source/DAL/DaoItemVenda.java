@@ -39,11 +39,11 @@ public class DaoItemVenda {
     }
 
     // Método para alterar um ItemProduto existente no banco de dados
-    public boolean alterar(ItemProduto itemProduto) {
+    public ItemProduto alterar(ItemProduto itemProduto) {
         DataBaseCom.conectar();
 
         if (findById(itemProduto.getId()) == null)
-            return false; // Retorna false se o ItemProduto não existir
+            return null; // Retorna null se o ItemProduto não existir
 
         try {
             // Atualize o ItemProduto
@@ -54,14 +54,18 @@ public class DaoItemVenda {
             ps.setString(2, itemProduto.getVenda());
             ps.setInt(3, itemProduto.getQuantidade());
             ps.setString(4, itemProduto.getId());
-            ps.execute();
 
-            return true; // Retorna true se a alteração for bem-sucedida
+            int rowsAffectedItemVenda = ps.executeUpdate();
+
+            if (rowsAffectedItemVenda > 0) {
+                return itemProduto;
+            }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        return false; // Retorna false se falhar
+        return null;
     }
 
     // Método para buscar um ItemProduto pelo ID no banco de dados
