@@ -89,7 +89,7 @@ public class DaoVenda {
         List<ItemVenda> itensVenda = new ArrayList<>();
 
         DataBaseCom.conectar();
-        String sqlString = "SELECT i.id, i.id_produto, i.qtde, p.nome AS nome_produto, p.preco "
+        String sqlString = "SELECT i.id, i.id_produto, i.qtde, p.nome, p.preco "
                 + "FROM item_venda i "
                 + "JOIN produto p ON i.id_produto = p.id "
                 + "WHERE i.id_venda = ?";
