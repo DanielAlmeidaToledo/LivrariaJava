@@ -66,7 +66,12 @@ public class DataBaseCom {
     // Fecha a conexão com o banco de dados.
     public static void close() {
         try {
-            getConnection().close();
+            if (getConnection() != null)
+                getConnection().close();
+
+            if (getStatement() != null)
+                getStatement().close();
+
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseCom.class.getName()).log(Level.SEVERE, null, ex);
         }

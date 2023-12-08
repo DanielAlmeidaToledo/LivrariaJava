@@ -47,7 +47,7 @@ public class DaoItemVenda {
 
         try {
             // Atualize o ItemProduto
-            String sqlString = "UPDATE item_produto SET id_produto=?, id_venda=?, quantidade=? WHERE id=?";
+            String sqlString = "UPDATE item_produto SET id_produto=?, id_venda=?, qtde=? WHERE id=?";
             PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
 
             ps.setString(1, itemProduto.getLivro());
@@ -85,7 +85,7 @@ public class DaoItemVenda {
                 itemProduto.setId(rs.getString("id"));
                 itemProduto.setLivro(rs.getString("id_produto"));
                 itemProduto.setVenda(rs.getString("id_venda"));
-                itemProduto.setQuantidade(rs.getInt("quantidade"));
+                itemProduto.setQuantidade(rs.getInt("qtde"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,14 +117,19 @@ public class DaoItemVenda {
         List<ItemProduto> lista = new ArrayList<>();
 
         try {
-            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM item_produto");
+            ResultSet rs = DataBaseCom.getStatement().executeQuery(
+                    "SELECT i.*, p.nome AS nomeProduto, p.preco " +
+                            "FROM item_produto i " +
+                            "INNER JOIN produto p ON i.id_produto = p.id");
 
             while (rs.next()) {
                 ItemProduto itemProduto = new ItemProduto();
                 itemProduto.setId(rs.getString("id"));
                 itemProduto.setLivro(rs.getString("id_produto"));
                 itemProduto.setVenda(rs.getString("id_venda"));
-                itemProduto.setQuantidade(rs.getInt("quantidade"));
+                itemProduto.setQuantidade(rs.getInt("qtde"));
+                itemProduto.setNomeProduto(rs.getString("nomeProduto"));
+                itemProduto.setPreco(rs.getDouble("preco"));
 
                 lista.add(itemProduto);
             }

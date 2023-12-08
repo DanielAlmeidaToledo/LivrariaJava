@@ -64,6 +64,7 @@ public class ItemProduto {
 
     @Override
     public String toString() {
-        return "ItemProduto [id=" + id + ", idVenda=" + idVenda + ", idLivro=" + idLivro + ", quantidade=" + quantidade + "]";
+        return "ItemProduto [id=" + id + ", idVenda=" + idVenda + ", idLivro=" + idLivro + ", quantidade=" + quantidade
+                + "]";
     }
 }

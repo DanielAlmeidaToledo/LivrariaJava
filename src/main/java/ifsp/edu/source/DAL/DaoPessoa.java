@@ -14,20 +14,22 @@ public class DaoPessoa {
 
     // Método para incluir uma pessoa no banco de dados
     public Pessoa incluir(Pessoa pessoa) {
-        DataBaseCom.conectar();
-        String sqlString = "INSERT INTO pessoa (id, nome) VALUES (?, ?)";
-
         try {
-            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, pessoa.getId());
-            ps.setString(2, pessoa.getNome());
+            DataBaseCom.conectar();
+            String sqlString = "INSERT INTO pessoa (id, nome) VALUES (?, ?)";
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0)
-                return pessoa;
+            try (PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString)) {
+                ps.setString(1, pessoa.getId());
+                ps.setString(2, pessoa.getNome());
 
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected > 0)
+                    return pessoa;
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
+        } finally {
+            DataBaseCom.close();
         }
 
         return null; // Retorna null se falhar
@@ -35,22 +37,24 @@ public class DaoPessoa {
 
     // Método para alterar as informações de uma pessoa existente no banco de dados
     public boolean alterar(Pessoa pessoa) {
-        DataBaseCom.conectar();
-
-        if (findById(pessoa.getId()) == null)
-            return false; // Retorna false se a pessoa não existir
-
         try {
+            DataBaseCom.conectar();
+
+            if (findById(pessoa.getId()) == null)
+                return false; // Retorna false se a pessoa não existir
+
             String sqlString = "UPDATE pessoa SET nome=? WHERE id=?";
-            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
+            try (PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString)) {
+                ps.setString(1, pessoa.getNome());
+                ps.setString(2, pessoa.getId());
+                ps.execute();
 
-            ps.setString(1, pessoa.getNome());
-            ps.setString(2, pessoa.getId());
-            ps.execute();
-
-            return true; // Retorna true se a alteração for bem-sucedida
+                return true; // Retorna true se a alteração for bem-sucedida
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
+        } finally {
+            DataBaseCom.close();
         }
 
         return false; // Retorna false se falhar
@@ -58,43 +62,49 @@ public class DaoPessoa {
 
     // Método para buscar uma pessoa pelo ID no banco de dados
     public Pessoa findById(String id) {
-        DataBaseCom.conectar();
-        Pessoa pessoa = null;
-
         try {
-            // Use PreparedStatement para evitar SQL Injection e garantir a formatação
-            // correta do ID
+            DataBaseCom.conectar();
+            Pessoa pessoa = null;
+
             String sqlQuery = "SELECT * FROM pessoa WHERE id = ?";
-            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlQuery);
-            ps.setString(1, id);
+            try (PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlQuery)) {
+                ps.setString(1, id);
 
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                pessoa = new Pessoa();
-                pessoa.setId(rs.getString("id"));
-                pessoa.setNome(rs.getString("nome"));
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        pessoa = new Pessoa();
+                        pessoa.setId(rs.getString("id"));
+                        pessoa.setNome(rs.getString("nome"));
+                    }
+                }
             }
+
+            return pessoa; // Retorna a pessoa ou null se não encontrada
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            DataBaseCom.close();
         }
 
-        return pessoa; // Retorna a pessoa ou null se não encontrada
+        return null; // Retorna null se falhar
     }
 
     // Método para excluir uma pessoa pelo ID
     public boolean excluir(Pessoa pessoa) {
-        DataBaseCom.conectar();
-        String sqlString = "DELETE FROM pessoa WHERE id=?";
-
         try {
-            PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString);
-            ps.setString(1, pessoa.getId());
-            ps.executeUpdate();
+            DataBaseCom.conectar();
+            String sqlString = "DELETE FROM pessoa WHERE id=?";
 
-            return true; // Retorna true se a exclusão for bem-sucedida
+            try (PreparedStatement ps = DataBaseCom.getConnection().prepareStatement(sqlString)) {
+                ps.setString(1, pessoa.getId());
+                ps.executeUpdate();
+
+                return true; // Retorna true se a exclusão for bem-sucedida
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
+        } finally {
+            DataBaseCom.close();
         }
 
         return false; // Retorna false se falhar
@@ -105,16 +115,18 @@ public class DaoPessoa {
         List<Pessoa> lista = new ArrayList<>();
 
         try {
-            ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM pessoa");
-
-            while (rs.next()) {
-                Pessoa pessoa = new Pessoa();
-                pessoa.setId(rs.getString("id"));
-                pessoa.setNome(rs.getString("nome"));
-                lista.add(pessoa);
+            try (ResultSet rs = DataBaseCom.getStatement().executeQuery("SELECT * FROM pessoa")) {
+                while (rs.next()) {
+                    Pessoa pessoa = new Pessoa();
+                    pessoa.setId(rs.getString("id"));
+                    pessoa.setNome(rs.getString("nome"));
+                    lista.add(pessoa);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            DataBaseCom.close();
         }
 
         return lista; // Retorna a lista de pessoas
